@@ -20,8 +20,6 @@ var (
 		{Eth, Usd}, {Eth, Eur}, {Eth, Pln}, {Eth, Btc},
 		{Lsk, Usd}, {Lsk, Eur}, {Lsk, Pln}, {Lsk, Btc},
 	}
-
-	aliases = []string{currencies.Bcc}
 )
 
 func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
@@ -32,7 +30,7 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 
 	ob, err = orderbook.Download(url)
 	if err != nil {
-		err = errors.Wrapf(err, "unable to fetch %s Order Book", Domain)
+		err = errors.Wrap(err, "unable to fetch Order Book")
 	}
 
 	return

@@ -1,8 +1,17 @@
 package bittrex
 
-import "github.com/meeDamian/crypto"
+import (
+	"github.com/meeDamian/crypto"
+	"github.com/meeDamian/crypto/utils"
+	"github.com/meeDamian/crypto/currencies"
+)
 
 const Domain = "bittrex.com"
+
+var (
+	log     = utils.Log().WithField("exchange", Domain)
+	aliases = []string{currencies.Bcc}
+)
 
 // DOCS: https://bittrex.com/home/api
 func New() crypto.Exchange {
@@ -13,4 +22,3 @@ func New() crypto.Exchange {
 		Markets:   Markets,
 	}
 }
-

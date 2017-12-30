@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 
 	"github.com/meeDamian/crypto"
+	"github.com/meeDamian/crypto/utils"
 )
 
 func History(c crypto.Credentials) (me string, err error) {
@@ -16,8 +17,8 @@ func History(c crypto.Credentials) (me string, err error) {
 
 	respBody, _ := ioutil.ReadAll(res.Body)
 
-	crypto.Log().Println(res.Status)
-	crypto.Log().Println(string(respBody))
+	utils.Log().Println(res.Status)
+	utils.Log().Println(string(respBody))
 
 	return
 }

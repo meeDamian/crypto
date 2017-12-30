@@ -8,6 +8,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// NOTE: this is just a playground material for now
+
 const myTradesUrl = "https://acx.io/api/v2/trades/my.json"
 
 type trade struct {
@@ -32,7 +34,7 @@ func MyTrades(c crypto.Credentials) (ts []trade, err error) {
 		return []trade{}, err
 	}
 
-	crypto.Log().Debugln(res.Status)
+	log.Debugln(res.Status)
 
 	defer res.Body.Close()
 

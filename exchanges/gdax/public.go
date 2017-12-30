@@ -3,7 +3,6 @@ package gdax
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/meeDamian/crypto"
@@ -25,24 +24,25 @@ type market struct {
 var marketList []crypto.Market
 
 func Markets() (_ []crypto.Market, err error) {
-	if len(marketList) == 0 {
-		var res *http.Response
-		res, err = utils.NetClient().Get(marketsUrl)
-		if err != nil {
-			return
-		}
+	if len(marketList) > 0 {
+		return marketList, nil
+	}
 
-		defer res.Body.Close()
+	res, err := utils.NetClient().Get(marketsUrl)
+	if err != nil {
+		return []crypto.Market{}, err
+	}
 
-		var ms []market
-		err = json.NewDecoder(res.Body).Decode(&ms)
-		if err != nil {
-			return
-		}
+	defer res.Body.Close()
 
-		for _, m := range ms {
-			marketList = append(marketList, crypto.NewMarket(m.Asset, m.PricedIn))
-		}
+	var ms []market
+	err = json.NewDecoder(res.Body).Decode(&ms)
+	if err != nil {
+		return
+	}
+
+	for _, m := range ms {
+		marketList = append(marketList, crypto.NewMarket(m.Asset, m.PricedIn))
 	}
 
 	return marketList, nil
@@ -53,7 +53,7 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 
 	ob, err = orderbook.Download(url)
 	if err != nil {
-		err = errors.Wrapf(err, "unable to fetch %s Order Book", Domain)
+		err = errors.Wrap(err, "unable to fetch Order Book")
 	}
 
 	return

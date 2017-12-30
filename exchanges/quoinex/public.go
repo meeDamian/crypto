@@ -3,8 +3,6 @@ package quoinex
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
-
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
@@ -42,7 +40,7 @@ func getId(market crypto.Market) (string, error) {
 		}
 	}
 
-	return "", errors.Errorf("requested market(%s%s) not found", market.Asset, market.PricedIn)
+	return "", errors.Errorf("requested market(%s) not found", market)
 }
 
 func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
@@ -55,7 +53,7 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 
 	res, err := utils.NetClient().Get(url)
 	if err != nil {
-		return orderbook.OrderBook{}, err
+		return
 	}
 
 	defer res.Body.Close()
@@ -63,7 +61,7 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 	var r obResp
 	err = json.NewDecoder(res.Body).Decode(&r)
 	if err != nil {
-		return orderbook.OrderBook{}, err
+		return
 	}
 
 	ob, err = orderbook.Normalise(r.Asks, r.Bids)
@@ -75,28 +73,32 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 }
 
 func Markets() (_ []crypto.Market, err error) {
-	if len(marketList) == 0 {
-		var res *http.Response
-		res, err = utils.NetClient().Get(marketsUrl)
-		if err != nil {
-			return
+	if len(marketList) > 0 {
+		return marketList, nil
+	}
+
+	res, err := utils.NetClient().Get(marketsUrl)
+	if err != nil {
+		return []crypto.Market{}, err
+	}
+
+	defer res.Body.Close()
+
+	var markets []market
+	err = json.NewDecoder(res.Body).Decode(&markets)
+	if err != nil {
+		return
+	}
+
+	for _, m := range markets {
+		pairings = append(pairings, m)
+
+		if m.Disabled {
+			log.Debugf("skipping disabled market %s/%s", m.Asset, m.PricedIn)
+			continue
 		}
 
-		defer res.Body.Close()
-
-		var markets []market
-		err = json.NewDecoder(res.Body).Decode(&markets)
-		if err != nil {
-			return
-		}
-
-		for _, m := range markets {
-			pairings = append(pairings, m)
-
-			if !m.Disabled {
-				marketList = append(marketList, crypto.NewMarket(m.Asset, m.PricedIn))
-			}
-		}
+		marketList = append(marketList, crypto.NewMarket(m.Asset, m.PricedIn))
 	}
 
 	return marketList, nil

@@ -1,13 +1,27 @@
 package bitcoincoid
 
-import "github.com/meeDamian/crypto"
+import (
+	"github.com/meeDamian/crypto"
+	"github.com/meeDamian/crypto/utils"
+	"github.com/meeDamian/crypto/currencies"
+)
 
 const Domain = "bitcoin.co.id"
+
+var (
+	log = utils.Log().WithField("exchange", Domain)
+
+	aliases = []string{
+		currencies.Nem, // Xem
+		currencies.Drk, // Dash
+		currencies.Str, // Xlm
+	}
+)
 
 // DOCS: https://vip.bitcoin.co.id/downloads/BITCOINCOID-API-DOCUMENTATION.pdf
 func New() crypto.Exchange {
 	return crypto.Exchange{
-		Name:   "Bx",
+		Name:   "Bitcoin Indonesia",
 		Domain: Domain,
 
 		// public

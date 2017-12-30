@@ -12,6 +12,6 @@ func New() crypto.Exchange {
 		Name:      "TDAX",
 		Domain:    Domain,
 		OrderBook: OrderBook,
-		Markets:   Markets,
+		Markets:   func() ([]crypto.Market, error) { return marketList, nil },
 	}
 }

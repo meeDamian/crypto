@@ -1,8 +1,17 @@
 package bitbay
 
-import "github.com/meeDamian/crypto"
+import (
+	"github.com/meeDamian/crypto"
+	"github.com/meeDamian/crypto/utils"
+	"github.com/meeDamian/crypto/currencies"
+)
 
 const Domain = "bitbay.net"
+
+var (
+	log     = utils.Log().WithField("exchange", Domain)
+	aliases = []string{currencies.Bcc}
+)
 
 // DOCS: https://bitbay.net/en/public-api
 func New() crypto.Exchange {

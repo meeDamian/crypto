@@ -5,6 +5,7 @@ import (
 
 	. "github.com/meeDamian/crypto/currencies/symbols"
 	"github.com/pkg/errors"
+	"github.com/meeDamian/crypto/utils"
 )
 
 type Currency struct {
@@ -13,7 +14,7 @@ type Currency struct {
 	IsFiat bool
 }
 
-// NOTE: alternative names ONLY here. Everything else to `symbols/`
+// NOTE: alternative names (aliases) here ONLY. Everything else to `symbols/`
 const (
 	Bcc = "BCC" // bcash
 	Bcg = "BCG" // bgold
@@ -61,7 +62,7 @@ var (
 		Usd: {Usd, "$", true},
 		Zar: {Zar, "R", true},
 
-		// crypto
+		// crypto (w/more than 1 name)
 		Btc:  bitcoin,
 		Xbt:  bitcoin,
 		Bch:  bcash,
@@ -81,6 +82,7 @@ var (
 		Xlm:  stellar,
 		Str:  stellar,
 
+		// crypto
 		Aur:   {Aur, "", false},
 		Blk:   {Blk, "", false},
 		Bts:   {Bts, "", false},
@@ -96,6 +98,7 @@ var (
 		Evx:   {Evx, "", false},
 		Ftc:   {Ftc, "", false},
 		Fuel:  {Fuel, "", false},
+		Game:  {Game, "", false},
 		Gld:   {Gld, "", false},
 		Gno:   {Gno, "", false},
 		Grs:   {Grs, "", false},
@@ -146,10 +149,12 @@ var (
 	}
 )
 
+// returns a list of all supported currencies
 func All() map[string]Currency {
 	return list
 }
 
+// returns `Currency` for a supported symbol/alias or error otherwise
 func Get(name string) (currency Currency, err error) {
 	currency, ok := list[strings.ToUpper(name)]
 	if !ok {
@@ -159,14 +164,26 @@ func Get(name string) (currency Currency, err error) {
 	return
 }
 
+// returns base name for an alias or unchanged (but uppercase'd) if currency unknown
+func Normalise(name string) string {
+	currency, err := Get(name)
+	if err != nil {
+		utils.Log().Debugf("unknown currency %s left unchanged", name)
+		return strings.ToUpper(name)
+	}
+
+	return currency.Name
+}
+
+// returns an alias for a given base name (if found in the `aliases` slice) or unchanged otherwise
 func Morph(from string, aliases []string) string {
 	for _, alias := range aliases {
-		a, err := Get(alias)
+		currency, err := Get(alias)
 		if err != nil {
 			continue
 		}
 
-		if a.Name == from {
+		if currency.Name == from {
 			return alias
 		}
 	}

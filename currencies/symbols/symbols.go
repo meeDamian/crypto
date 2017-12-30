@@ -45,6 +45,7 @@ const (
 	Evx   = "EVX"   // Everex
 	Ftc   = "FTC"   // Feathercoin
 	Fuel  = "FUEL"  // Etherparty
+	Game  = "GAME"  // GameCredits
 	Gld   = "GLD"   // GoldCoin
 	Gno   = "GNO"   // Gnosis
 	Grs   = "GRS"   // Groestlcoin

@@ -3,7 +3,6 @@ package bittrex
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/meeDamian/crypto"
@@ -43,39 +42,38 @@ type (
 	}
 )
 
-var (
-	marketList []crypto.Market
-	aliases    = []string{currencies.Bcc}
-)
+var marketList []crypto.Market
 
 func Markets() (_ []crypto.Market, err error) {
-	if len(marketList) == 0 {
-		var res *http.Response
-		res, err = utils.NetClient().Get(marketsUrl)
-		if err != nil {
-			return
+	if len(marketList) > 0 {
+		return marketList, nil
+	}
+
+	res, err := utils.NetClient().Get(marketsUrl)
+	if err != nil {
+		return []crypto.Market{}, err
+	}
+
+	defer res.Body.Close()
+
+	var ms marketResp
+	err = json.NewDecoder(res.Body).Decode(&ms)
+	if err != nil {
+		return
+	}
+
+	if !ms.Success {
+		err = errors.Errorf("unable to fetch %s markets: ", Domain, ms.Message)
+		return
+	}
+
+	for _, m := range ms.Result {
+		if !m.IsActive {
+			log.Debugf("skipping inactive market %s/%s", m.Asset, m.PricedIn)
+			continue
 		}
 
-		defer res.Body.Close()
-
-		var ms marketResp
-		err = json.NewDecoder(res.Body).Decode(&ms)
-		if err != nil {
-			return
-		}
-
-		if !ms.Success {
-			err = errors.Errorf("unable to fetch %s markets: ", Domain, ms.Message)
-			return
-		}
-
-		for _, m := range ms.Result {
-			if !m.IsActive {
-				continue
-			}
-
-			marketList = append(marketList, crypto.NewMarket(m.Asset, m.PricedIn))
-		}
+		marketList = append(marketList, crypto.NewMarket(m.Asset, m.PricedIn))
 	}
 
 	return marketList, nil
@@ -90,7 +88,7 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 
 	res, err := utils.NetClient().Get(url)
 	if err != nil {
-		return orderbook.OrderBook{}, err
+		return ob, err
 	}
 
 	defer res.Body.Close()
@@ -98,12 +96,12 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 	var r obResp
 	err = json.NewDecoder(res.Body).Decode(&r)
 	if err != nil {
-		return orderbook.OrderBook{}, err
+		return ob, err
 	}
 
 	ob, err = orderbook.Normalise(r.Result.Asks, r.Result.Bids)
 	if err != nil {
-		err = errors.Wrapf(err, "unable to fetch %s Order Book", Domain)
+		err = errors.Wrap(err, "unable to fetch Order Book")
 	}
 
 	return

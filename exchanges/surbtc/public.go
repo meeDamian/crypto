@@ -3,8 +3,6 @@ package surbtc
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
-
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
@@ -36,8 +34,7 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 
 	res, err := utils.NetClient().Get(url)
 	if err != nil {
-		err = errors.Wrap(err, "unable to GET orderbook")
-		return
+		return ob, errors.Wrap(err, "unable to GET orderbook")
 	}
 
 	defer res.Body.Close()
@@ -45,8 +42,7 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 	var r obResponse
 	err = json.NewDecoder(res.Body).Decode(&r)
 	if err != nil {
-		err = errors.Wrap(err, "unable to decode response")
-		return
+		return ob, errors.Wrap(err, "unable to decode response")
 	}
 
 	ob, err = orderbook.Normalise(r.OrderBook.Asks, r.OrderBook.Bids)
@@ -58,24 +54,25 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 }
 
 func Markets() (_ []crypto.Market, err error) {
-	if len(marketList) == 0 {
-		var res *http.Response
-		res, err = utils.NetClient().Get(marketsUrl)
-		if err != nil {
-			return
-		}
+	if len(marketList) > 0 {
+		return marketList, nil
+	}
 
-		defer res.Body.Close()
+	res, err := utils.NetClient().Get(marketsUrl)
+	if err != nil {
+		return []crypto.Market{}, err
+	}
 
-		var ms marketResponse
-		err = json.NewDecoder(res.Body).Decode(&ms)
-		if err != nil {
-			return
-		}
+	defer res.Body.Close()
 
-		for _, m := range ms.Markets {
-			marketList = append(marketList, crypto.NewMarket(m.Asset, m.PricedIn))
-		}
+	var ms marketResponse
+	err = json.NewDecoder(res.Body).Decode(&ms)
+	if err != nil {
+		return
+	}
+
+	for _, m := range ms.Markets {
+		marketList = append(marketList, crypto.NewMarket(m.Asset, m.PricedIn))
 	}
 
 	return marketList, nil

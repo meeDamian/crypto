@@ -7,8 +7,9 @@ import (
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/currencies"
 	"github.com/meeDamian/crypto/orderbook"
-	"github.com/meeDamian/crypto/utils"
+
 	"github.com/pkg/errors"
+	"github.com/meeDamian/crypto/utils"
 )
 
 const (
@@ -22,15 +23,42 @@ type (
 	}
 
 	marketsResponse struct {
-		Result map[string]struct {
-			Pair  string `json:"altname"`
-			Asset string `json:"base"`
-			Price string `json:"quote"`
-		} `json:"result"`
+		Result map[string]interface{} `json:"result"`
 	}
 )
 
-var aliases = []string{currencies.Xbt}
+var marketList []crypto.Market
+
+func Markets() (_ []crypto.Market, err error) {
+	if len(marketList) > 0 {
+		return marketList, nil
+	}
+
+	res, err := utils.NetClient().Get(marketsUrl)
+	if err != nil {
+		return []crypto.Market{}, errors.Wrap(err, "couldn't fetch markets")
+	}
+
+	defer res.Body.Close()
+
+	var r marketsResponse
+	err = json.NewDecoder(res.Body).Decode(&r)
+	if err != nil {
+		return []crypto.Market{}, errors.Wrap(err, "unable to json-decode response")
+	}
+
+	for symbol := range r.Result {
+		market, err := crypto.NewMarketFromSymbol(symbol)
+		if err != nil {
+			log.Debugln("unable to parse symbol:", err)
+			continue
+		}
+
+		marketList = append(marketList, market)
+	}
+
+	return marketList, nil
+}
 
 func nonsensePrefix(curr string) (string, error) {
 	c, err := currencies.Get(curr)
@@ -68,8 +96,7 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 
 	res, err := utils.NetClient().Get(url)
 	if err != nil {
-		err = errors.Wrap(err, "unable to GET orderbook")
-		return
+		return ob, errors.Wrap(err, "unable to GET orderbook")
 	}
 
 	defer res.Body.Close()
@@ -77,84 +104,38 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 	var r obResponse
 	err = json.NewDecoder(res.Body).Decode(&r)
 	if err != nil {
-		err = errors.Wrap(err, "unable to decode response")
-		return
+		return ob, errors.Wrap(err, "unable to json-decode response")
 	}
 
 	prefAsset, err := nonsensePrefix(assetSymbol)
 	if err != nil {
-		err = errors.Wrap(err, "cannot prefix asset")
-		return
+		return ob, errors.Wrap(err, "cannot prefix asset")
 	}
 
 	prefPrice, err := nonsensePrefix(priceSymbol)
 	if err != nil {
-		err = errors.Wrap(err, "cannot prefix pricedIn")
-		return
+		return ob, errors.Wrap(err, "cannot prefix pricedIn")
 	}
 
 	marketKey := fmt.Sprintf("%s%s", prefAsset, prefPrice)
 	for market, orderResp := range r.Result {
 		if len(r.Result) > 1 {
-			crypto.Log().Debugln("more than one Kraken market returned…")
+			log.Debugf("more than one market returned for %s…", m)
 		}
 
 		if market == marketKey || len(r.Result) == 1 {
 			if market != marketKey {
-				crypto.Log().Debugf("non-standard Kraken market key returned: %s instead of %s", market, marketKey)
+				log.Debugf("non-standard market symbol returned: %s instead of %s", market, marketKey)
 			}
 
 			ob, err = orderbook.Normalise(orderResp.Asks, orderResp.Bids)
 			if err != nil {
-				err = errors.Wrap(err, "unable to normalise Kraken's OrderBook")
+				err = errors.Wrap(err, "unable to normalise Order Book")
 			}
 
 			return
 		}
 	}
 
-	err = errors.Errorf("%s market not found.", marketKey)
-
-	return
-}
-
-func Markets() (ms []crypto.Market, err error) {
-	res, err := utils.NetClient().Get(marketsUrl)
-	if err != nil {
-		err = errors.Wrap(err, "couldn't fetch markets")
-		return
-	}
-
-	defer res.Body.Close()
-
-	var r marketsResponse
-	err = json.NewDecoder(res.Body).Decode(&r)
-	if err != nil {
-		err = errors.Wrap(err, "unable to decode response")
-		return
-	}
-
-	pairs := make(map[string]bool)
-	for _, p := range r.Result {
-		asset, err := removeKrakenNonsense(p.Asset)
-		if err != nil {
-			continue
-		}
-
-		price, err := removeKrakenNonsense(p.Price)
-		if err != nil {
-			continue
-		}
-
-		// skip adding if already added
-		_, ok := pairs[asset+price]
-		if ok {
-			continue
-		}
-		pairs[asset+price] = true
-
-		ms = append(ms, crypto.NewMarket(asset, price))
-	}
-
-	return
+	return ob, errors.Errorf("%s market not found.", marketKey)
 }

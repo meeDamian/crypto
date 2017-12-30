@@ -8,6 +8,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// NOTE: this is just a playground material for now
+
 const (
 	withdrawalsUrl = "https://acx.io/api/v2/withdraws.json"
 	depositsUrl    = "https://acx.io/api/v2/deposits.json"

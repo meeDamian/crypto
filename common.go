@@ -1,6 +1,12 @@
 package crypto
 
-import "github.com/meeDamian/crypto/orderbook"
+import (
+	"github.com/meeDamian/crypto/orderbook"
+	"strings"
+	"regexp"
+	"fmt"
+	"github.com/meeDamian/crypto/currencies"
+)
 
 type (
 	Exchange struct {
@@ -12,7 +18,6 @@ type (
 
 		// private
 		Balances func(Credentials) (Balances, error)
-		//Orders func() ([]orderbook.Order, error)
 	}
 
 	Credentials struct {
@@ -21,3 +26,15 @@ type (
 		Name, Key, Secret string
 	}
 )
+
+var pairRegExp regexp.Regexp
+
+func init() {
+	var symbols []string
+	for symbol := range currencies.All() {
+		symbols = append(symbols, symbol)
+	}
+
+	orSymbols := strings.Join(symbols, "|")
+	pairRegExp = *regexp.MustCompile(fmt.Sprintf(`^[ZX]?(%[1]s)\/?[ZX]?(%[1]s)$`, orSymbols))
+}

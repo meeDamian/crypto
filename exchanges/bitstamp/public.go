@@ -3,7 +3,6 @@ package bitstamp
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/meeDamian/crypto"
@@ -18,7 +17,7 @@ const (
 )
 
 type market struct {
-	Pair string `json:"name"`
+	Symbol string `json:"name"`
 }
 
 var marketList []crypto.Market
@@ -28,33 +27,38 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 
 	ob, err = orderbook.Download(url)
 	if err != nil {
-		err = errors.Wrapf(err, "unable to fetch %s Order Book", Domain)
+		err = errors.Wrap(err, "unable to fetch Order Book")
 	}
 
 	return
 }
 
 func Markets() (_ []crypto.Market, err error) {
-	if len(marketList) == 0 {
-		var res *http.Response
-		res, err = utils.NetClient().Get(marketsUrl)
+	if len(marketList) > 0 {
+		return marketList, nil
+	}
+
+	res, err := utils.NetClient().Get(marketsUrl)
+	if err != nil {
+		return []crypto.Market{}, err
+	}
+
+	defer res.Body.Close()
+
+	var ms []market
+	err = json.NewDecoder(res.Body).Decode(&ms)
+	if err != nil {
+		return
+	}
+
+	for _, m := range ms {
+		market, err := crypto.NewMarketFromSymbol(m.Symbol)
 		if err != nil {
-			return
+			log.Debugln("unable to parse symbol:", err)
+			continue
 		}
 
-		defer res.Body.Close()
-
-		var ms []market
-		err = json.NewDecoder(res.Body).Decode(&ms)
-		if err != nil {
-			return
-		}
-
-		for _, m := range ms {
-			pair := strings.Split(m.Pair, "/")
-
-			marketList = append(marketList, crypto.NewMarket(pair[0], pair[1]))
-		}
+		marketList = append(marketList, market)
 	}
 
 	return marketList, nil

@@ -33,6 +33,7 @@ func AsNestedSlice(os []PendingOrder) (orders [][]float64) {
 	return
 }
 
+// returns a cumulative volume of either side of orderbook
 func calcVolume(orders []PendingOrder) (volume float64) {
 	for _, o := range orders {
 		volume += o.Volume

@@ -1,8 +1,13 @@
 package bx
 
-import "github.com/meeDamian/crypto"
+import (
+	"github.com/meeDamian/crypto"
+	"github.com/meeDamian/crypto/utils"
+)
 
 const Domain = "bx.in.th"
+
+var log = utils.Log().WithField("exchange", Domain)
 
 // DOCS: https://bx.in.th/info/api/
 func New() crypto.Exchange {

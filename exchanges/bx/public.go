@@ -3,8 +3,6 @@ package bx
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
-
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
@@ -43,50 +41,48 @@ func (p pairings) getId(market crypto.Market) (int, error) {
 
 func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 	if len(marketPairings) == 0 {
-		err = errors.New("call to bx.OrderBook() requires prior call to bx.Markets()")
-		return
+		return ob, errors.New("call to bx.OrderBook() requires prior call to bx.Markets()")
 	}
 
 	id, err := marketPairings.getId(m)
 	if err != nil {
-		err = errors.Wrapf(err, "unable to get %s market pairing", Domain)
-		return
+		return ob, errors.Wrapf(err, "unable to get %s market pairing", Domain)
 	}
 
 	url := fmt.Sprintf(orderBookUrl, id)
-
 	ob, err = orderbook.Download(url)
 	if err != nil {
-		err = errors.Wrapf(err, "unable to fetch %s Order Book", Domain)
+		err = errors.Wrap(err, "unable to fetch Order Book")
 	}
 
 	return
 }
 
 func Markets() (_ []crypto.Market, err error) {
-	if len(marketList) == 0 {
-		var res *http.Response
-		res, err = utils.NetClient().Get(marketsUrl)
-		if err != nil {
-			return
-		}
+	if len(marketList) > 0 {
+		return marketList, nil
+	}
 
-		defer res.Body.Close()
+	res, err := utils.NetClient().Get(marketsUrl)
+	if err != nil {
+		return []crypto.Market{}, err
+	}
 
-		var ms map[string]pairing
-		err = json.NewDecoder(res.Body).Decode(&ms)
-		if err != nil {
-			return
-		}
+	defer res.Body.Close()
 
-		marketPairings = make(map[int]crypto.Market)
+	var ms map[string]pairing
+	err = json.NewDecoder(res.Body).Decode(&ms)
+	if err != nil {
+		return
+	}
 
-		for _, m := range ms {
-			market := crypto.NewMarket(m.Asset, m.PricedIn)
+	marketPairings = make(map[int]crypto.Market)
 
-			marketPairings[m.Id] = market
-			marketList = append(marketList, market)
-		}
+	for _, m := range ms {
+		market := crypto.NewMarket(m.Asset, m.PricedIn)
+
+		marketPairings[m.Id] = market
+		marketList = append(marketList, market)
 	}
 
 	return marketList, nil

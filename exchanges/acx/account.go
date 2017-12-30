@@ -2,10 +2,7 @@ package acx
 
 import (
 	"encoding/json"
-	"strconv"
-
 	"github.com/meeDamian/crypto"
-	"github.com/meeDamian/crypto/currencies"
 	"github.com/pkg/errors"
 )
 
@@ -30,7 +27,7 @@ const meUrl = "https://acx.io/api/v2/members/me.json"
 func Balances(c crypto.Credentials) (balances crypto.Balances, err error) {
 	res, err := privateRequest(c, "GET", meUrl, nil)
 	if err != nil {
-		return crypto.Balances{}, err
+		return balances, err
 	}
 
 	defer res.Body.Close()
@@ -38,36 +35,16 @@ func Balances(c crypto.Credentials) (balances crypto.Balances, err error) {
 	var m me
 	err = json.NewDecoder(res.Body).Decode(&m)
 	if err != nil {
-		err = errors.Wrapf(err, "can't decode me from %s", Domain)
-		return
+		return balances, errors.Wrap(err, "can't json-decode response")
 	}
 
 	balances = make(crypto.Balances)
 	for _, b := range m.Accounts {
-		currency, err := currencies.Get(b.Currency)
+		err := balances.Add(b.Currency, b.Balance, nil, b.Locked)
 		if err != nil {
-			crypto.Log().Debugf("skipping balance of %s: unknown currency", b.Currency)
-			continue
-		}
-
-		balance, err := strconv.ParseFloat(b.Balance, 64)
-		if err != nil {
-			crypto.Log().Debugf("skipping balance of %s: can't convert Balance=%s to float", b.Currency, b.Balance)
-			continue
-		}
-
-		locked, err := strconv.ParseFloat(b.Locked, 64)
-		if err != nil {
-			crypto.Log().Debugf("skipping balance of %s: can't convert Locked=%s to float", b.Currency, b.Locked)
-			continue
-		}
-
-		balances[currency.Name] = crypto.Balance{
-			Available: balance - locked,
-			Total:     balance,
+			log.Debugf("skipping balance of %s, due to: %v", b.Currency, err)
 		}
 	}
 
 	return
-
 }

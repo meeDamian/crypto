@@ -2,21 +2,18 @@ package kraken
 
 import (
 	"encoding/json"
-	"log"
-	"strconv"
-
 	"github.com/meeDamian/crypto"
 	"github.com/pkg/errors"
 )
 
-const balUrl = "https://api.kraken.com/0/private/Balance"
+const balancesUrl = "https://api.kraken.com/0/private/Balance"
 
 type balResp struct {
 	Result map[string]string `json:"result"`
 }
 
 func Balances(c crypto.Credentials) (balances crypto.Balances, err error) {
-	res, err := privateRequest(c, balUrl, nil)
+	res, err := privateRequest(c, balancesUrl, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -26,27 +23,20 @@ func Balances(c crypto.Credentials) (balances crypto.Balances, err error) {
 	var bal balResp
 	err = json.NewDecoder(res.Body).Decode(&bal)
 	if err != nil {
-		err = errors.Wrapf(err, "can't decode me from %s", Domain)
-		return
+		return balances, errors.Wrap(err, "can't json-decode response")
 	}
 
 	balances = make(crypto.Balances)
-	for name, balance := range bal.Result {
-		code, err := removeKrakenNonsense(name)
+	for currency, available := range bal.Result {
+		currencyName, err := removeKrakenNonsense(currency)
 		if err != nil {
-			log.Println("EEE", err)
+			log.Debug(err)
 			continue
 		}
 
-		bal, err := strconv.ParseFloat(balance, 64)
+		err = balances.Add(currencyName, available, nil, nil)
 		if err != nil {
-			crypto.Log().Debugf("skipping balance of %s: can't convert Balance=%s to float", name, balance)
-			continue
-		}
-
-		balances[code] = crypto.Balance{
-			Available: bal,
-			Total:     bal,
+			log.Debugf("skipping balance of %s: %v", currencyName, err)
 		}
 	}
 

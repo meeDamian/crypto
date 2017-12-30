@@ -4,10 +4,11 @@ import (
 	. "github.com/meeDamian/crypto/currencies/symbols"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+	"github.com/meeDamian/arb/lib/currencies"
 )
 
 func TestMorphBccMatch(t *testing.T) {
-	a := MorphBcc(Bch)
+	a := Morph(Bch, []string{currencies.Bcc})
 
 	Convey("Should change BCH to BCC", t, func() {
 		So(a, ShouldEqual, Bcc)
@@ -15,7 +16,7 @@ func TestMorphBccMatch(t *testing.T) {
 }
 
 func TestMorphBccNoMatch(t *testing.T) {
-	a := MorphBcc(Btc)
+	a := Morph(Btc, []string{currencies.Bcc})
 
 	Convey("Should change BCH to BCC", t, func() {
 		So(a, ShouldEqual, Btc)
@@ -23,7 +24,7 @@ func TestMorphBccNoMatch(t *testing.T) {
 }
 
 func TestMorphXbtMatch(t *testing.T) {
-	a := MorphXbt(Btc)
+	a := Morph(Btc, []string{currencies.Xbt})
 
 	Convey("Should change BCH to BCC", t, func() {
 		So(a, ShouldEqual, Xbt)
@@ -31,7 +32,7 @@ func TestMorphXbtMatch(t *testing.T) {
 }
 
 func TestMorphXbtNoMatch(t *testing.T) {
-	a := MorphXbt(Eth)
+	a := Morph(Eth, []string{currencies.Xbt})
 
 	Convey("Should change BCH to BCC", t, func() {
 		So(a, ShouldEqual, Eth)
@@ -59,7 +60,8 @@ func TestGetCrypto(t *testing.T) {
 func TestGetNonexistent(t *testing.T) {
 	Convey("Should error", t, func() {
 		usd, err := Get("AAA")
-		So(err, ShouldBeNil)
+		So(err, ShouldNotBeNil)
 		So(usd, ShouldBeZeroValue)
 	})
 }
+

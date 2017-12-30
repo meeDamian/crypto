@@ -19,6 +19,9 @@ func ToFloat(v interface{}) (float64, error) {
 
 	case float64:
 		return t, nil
+
+	case int64:
+		return float64(t), nil
 	}
 
 	return 0, errors.Errorf("can't convert %v to float64: unsupported type", v)

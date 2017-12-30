@@ -83,8 +83,7 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 
 	res, err := utils.NetClient().Get(url)
 	if err != nil {
-		err = errors.Wrap(err, "unable to GET orderbook")
-		return
+		return ob, errors.Wrap(err, "unable to GET orderbook")
 	}
 
 	defer res.Body.Close()
@@ -92,8 +91,7 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 	var r obResponse
 	err = json.NewDecoder(res.Body).Decode(&r)
 	if err != nil {
-		err = errors.Wrap(err, "unable to decode response")
-		return
+		return ob, errors.Wrap(err, "unable to decode response")
 	}
 
 	var asks, bids []orderbook.PendingOrder
@@ -111,12 +109,8 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 	})
 
 	if err != nil {
-		err = errors.Wrapf(err, "unable to fetch %s Order Book", Domain)
+		err = errors.Wrapf(err, "unable to fetch Order Book")
 	}
 
 	return
-}
-
-func Markets() (_ []crypto.Market, err error) {
-	return marketList, nil
 }

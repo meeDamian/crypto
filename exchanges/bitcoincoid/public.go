@@ -19,32 +19,24 @@ type obResponse struct {
 	Asks []interface{} `json:"sell"`
 }
 
-var (
-	marketList = []crypto.Market{
-		{Bts, Btc},
-		{Dash, Btc},
-		{Doge, Btc},
-		{Xem, Btc},
+var marketList = []crypto.Market{
+	{Bts, Btc},
+	{Dash, Btc},
+	{Doge, Btc},
+	{Xem, Btc},
 
-		{Bch, Idr},
-		{Btc, Idr},
-		{Btg, Idr},
-		{Etc, Idr},
-		{Waves, Idr},
-		{Xzc, Idr},
-		{Eth, Idr}, {Eth, Btc},
-		{Ltc, Idr}, {Ltc, Btc},
-		{Nxt, Idr}, {Nxt, Btc},
-		{Xrp, Idr}, {Xrp, Btc},
-		{Xlm, Idr}, {Xlm, Btc},
-	}
-
-	aliases = []string{
-		currencies.Nem, // Xem
-		currencies.Drk, // Dash
-		currencies.Str, // Xlm
-	}
-)
+	{Bch, Idr},
+	{Btc, Idr},
+	{Btg, Idr},
+	{Etc, Idr},
+	{Waves, Idr},
+	{Xzc, Idr},
+	{Eth, Idr}, {Eth, Btc},
+	{Ltc, Idr}, {Ltc, Btc},
+	{Nxt, Idr}, {Nxt, Btc},
+	{Xrp, Idr}, {Xrp, Btc},
+	{Xlm, Idr}, {Xlm, Btc},
+}
 
 func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 	url := fmt.Sprintf(orderBookUrl,
@@ -52,11 +44,9 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 		strings.ToLower(currencies.Morph(m.PricedIn, aliases)),
 	)
 
-	fmt.Println(url)
-
 	res, err := utils.NetClient().Get(url)
 	if err != nil {
-		return orderbook.OrderBook{}, err
+		return ob, err
 	}
 
 	defer res.Body.Close()
@@ -64,7 +54,7 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 	var r obResponse
 	err = json.NewDecoder(res.Body).Decode(&r)
 	if err != nil {
-		return orderbook.OrderBook{}, err
+		return
 	}
 
 	return orderbook.Normalise(r.Asks, r.Bids)

@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+// TODO: everything
+
 type (
 	Params struct {
 		Timeout         time.Duration
