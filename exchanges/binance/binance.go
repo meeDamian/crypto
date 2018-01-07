@@ -18,7 +18,12 @@ func New() crypto.Exchange {
 	return crypto.Exchange{
 		Name:      "Binance",
 		Domain:    Domain,
+
+		// public
 		OrderBook: OrderBook,
 		Markets:   Markets,
+
+		// private
+		Balances: Balances,
 	}
 }
