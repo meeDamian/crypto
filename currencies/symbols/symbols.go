@@ -122,7 +122,7 @@ const (
 	Zec   = "ZEC"   // Zcash
 
 	// shit
+	Kfee = "KFEE" // Kraken fee
 	Usdt = "USDT" // Tether
 	Xrp  = "XRP"  // Ripple
-	Kfee = "KFEE" // Kraken fee
 )

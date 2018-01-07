@@ -173,8 +173,8 @@ var (
 		Zec:   {Zec, "ⓩ", false},
 
 		// other
-		Usdt: {Usdt, "US$₮", false},
 		Kfee: {Kfee, "ĸ", false},
+		Usdt: {Usdt, "US$₮", false},
 	}
 )
 
