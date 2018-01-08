@@ -137,6 +137,7 @@ const (
 	Tix   = "TIX"   // Blocktix                 https://coinmarketcap.com/currencies/blocktix/
 	Trst  = "TRST"  // WeTrust                  https://coinmarketcap.com/currencies/trust/
 	Trust = "TRUST" // TrustPlus
+	Trx   = "TRX"   // TRON                     https://coinmarketcap.com/currencies/tron/
 	Ubtc  = "UBTC"  // United Bitcoin
 	Ukg   = "UKG"   // Unikoin Gold             https://coinmarketcap.com/currencies/unikoin-gold/
 	Vib   = "VIB"   // Viberate                 https://coinmarketcap.com/currencies/viberate/

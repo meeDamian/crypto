@@ -190,6 +190,7 @@ var (
 		Tix:   {Tix, "", false},
 		Trst:  {Trst, "", false},
 		Trust: {Trust, "", false},
+		Trx:   {Trx, "", false},
 		Ubtc:  {Ubtc, "", false},
 		Ukg:   {Ukg, "", false},
 		Vib:   {Vib, "", false},
