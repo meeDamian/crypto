@@ -88,6 +88,11 @@ func tryVolume(order map[string]interface{}) (volume interface{}) {
 		return
 	}
 
+	volume, ok = order["size"] // HitBTC
+	if ok {
+		return
+	}
+
 	return
 }
 
