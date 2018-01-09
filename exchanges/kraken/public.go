@@ -7,9 +7,8 @@ import (
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/currencies"
 	"github.com/meeDamian/crypto/orderbook"
-
-	"github.com/pkg/errors"
 	"github.com/meeDamian/crypto/utils"
+	"github.com/pkg/errors"
 )
 
 const (

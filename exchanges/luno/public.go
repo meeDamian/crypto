@@ -3,6 +3,7 @@ package luno
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/currencies"
 	"github.com/meeDamian/crypto/orderbook"

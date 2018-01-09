@@ -1,8 +1,6 @@
 package surbtc
 
-import (
-	"github.com/meeDamian/crypto"
-)
+import "github.com/meeDamian/crypto"
 
 const Domain = "surbtc.com"
 

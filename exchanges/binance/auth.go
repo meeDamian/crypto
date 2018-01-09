@@ -1,17 +1,17 @@
 package binance
 
 import (
-	"net/http"
-
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
-	"time"
+	"net/http"
+	"net/url"
 	"strings"
+	"time"
+
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/utils"
-	"net/url"
-	"crypto/hmac"
-	"encoding/hex"
-	"crypto/sha256"
 )
 
 func signature(secret, query string) string {

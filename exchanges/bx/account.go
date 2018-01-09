@@ -2,6 +2,7 @@ package bx
 
 import (
 	"encoding/json"
+
 	"github.com/meeDamian/crypto"
 	"github.com/pkg/errors"
 )

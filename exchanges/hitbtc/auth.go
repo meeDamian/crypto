@@ -2,6 +2,7 @@ package hitbtc
 
 import (
 	"net/http"
+
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/utils"
 )

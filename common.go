@@ -1,11 +1,12 @@
 package crypto
 
 import (
-	"github.com/meeDamian/crypto/orderbook"
-	"strings"
-	"regexp"
 	"fmt"
+	"regexp"
+	"strings"
+
 	"github.com/meeDamian/crypto/currencies"
+	"github.com/meeDamian/crypto/orderbook"
 )
 
 type (

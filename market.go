@@ -2,6 +2,7 @@ package crypto
 
 import (
 	"fmt"
+
 	"github.com/meeDamian/crypto/currencies"
 	"github.com/pkg/errors"
 )

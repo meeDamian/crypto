@@ -2,8 +2,8 @@ package binance
 
 import (
 	"github.com/meeDamian/crypto"
-	"github.com/meeDamian/crypto/utils"
 	"github.com/meeDamian/crypto/currencies"
+	"github.com/meeDamian/crypto/utils"
 )
 
 const Domain = "binance.com"
@@ -16,8 +16,8 @@ var (
 // DOCS: https://www.binance.com/restapipub.html
 func New() crypto.Exchange {
 	return crypto.Exchange{
-		Name:      "Binance",
-		Domain:    Domain,
+		Name:   "Binance",
+		Domain: Domain,
 
 		// public
 		OrderBook: OrderBook,

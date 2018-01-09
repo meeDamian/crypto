@@ -2,8 +2,8 @@ package crypto
 
 import (
 	"github.com/meeDamian/crypto/currencies"
-	"github.com/pkg/errors"
 	"github.com/meeDamian/crypto/utils"
+	"github.com/pkg/errors"
 )
 
 type (

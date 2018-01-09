@@ -1,10 +1,11 @@
 package currencies
 
 import (
+	"testing"
+
+	"github.com/meeDamian/arb/lib/currencies"
 	. "github.com/meeDamian/crypto/currencies/symbols"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
-	"github.com/meeDamian/arb/lib/currencies"
 )
 
 func TestMorphBccMatch(t *testing.T) {
@@ -64,4 +65,3 @@ func TestGetNonexistent(t *testing.T) {
 		So(usd, ShouldBeZeroValue)
 	})
 }
-

@@ -3,6 +3,7 @@ package surbtc
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"

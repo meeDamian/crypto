@@ -2,8 +2,8 @@ package bittrex
 
 import (
 	"github.com/meeDamian/crypto"
-	"github.com/meeDamian/crypto/utils"
 	"github.com/meeDamian/crypto/currencies"
+	"github.com/meeDamian/crypto/utils"
 )
 
 const Domain = "bittrex.com"

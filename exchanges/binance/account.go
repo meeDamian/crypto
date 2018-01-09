@@ -1,8 +1,9 @@
 package binance
 
 import (
-	"github.com/meeDamian/crypto"
 	"encoding/json"
+
+	"github.com/meeDamian/crypto"
 	"github.com/pkg/errors"
 )
 

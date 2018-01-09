@@ -1,8 +1,6 @@
 package tdax
 
-import (
-	"github.com/meeDamian/crypto"
-)
+import "github.com/meeDamian/crypto"
 
 const Domain = "tdax.com"
 

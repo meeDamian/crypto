@@ -2,10 +2,11 @@ package hitbtc
 
 import (
 	"encoding/json"
-	"github.com/meeDamian/crypto"
-	"github.com/meeDamian/crypto/utils"
-	"github.com/meeDamian/crypto/orderbook"
 	"fmt"
+
+	"github.com/meeDamian/crypto"
+	"github.com/meeDamian/crypto/orderbook"
+	"github.com/meeDamian/crypto/utils"
 )
 
 const (
