@@ -16,9 +16,14 @@ var (
 // DOCS: https://liqui.io/api
 func New() crypto.Exchange {
 	return crypto.Exchange{
-		Name:      "Liqui",
-		Domain:    Domain,
+		Name:   "Liqui",
+		Domain: Domain,
+
+		// public
 		OrderBook: OrderBook,
 		Markets:   Markets,
+
+		// private
+		Balances: Balances,
 	}
 }
