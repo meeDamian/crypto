@@ -130,6 +130,7 @@ const (
 	Slr   = "SLR"   // SolarCoin
 	Sls   = "SLS"   // SaluS                    https://coinmarketcap.com/currencies/salus/
 	Snt   = "SNT"   // Status                   https://coinmarketcap.com/currencies/status/
+	Srn   = "SRN"   // SIRIN LABS Token         https://coinmarketcap.com/currencies/sirin-labs-token/
 	Start = "START" // Startcoin
 	Storj = "STORJ" // Storj                    https://coinmarketcap.com/currencies/storj/
 	Strat = "STRAT" // Stratis                  https://coinmarketcap.com/currencies/stratis/

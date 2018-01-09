@@ -4,8 +4,8 @@ import (
 	"strings"
 
 	. "github.com/meeDamian/crypto/currencies/symbols"
-	"github.com/pkg/errors"
 	"github.com/meeDamian/crypto/utils"
+	"github.com/pkg/errors"
 )
 
 type Currency struct {
@@ -183,8 +183,9 @@ var (
 		Slr:   {Slr, "", false},
 		Sls:   {Sls, "", false},
 		Snt:   {Snt, "", false},
+		Srn:   {Srn, "", false},
 		Start: {Start, "", false},
-		Storj: {Strat, "", false},
+		Storj: {Storj, "", false},
 		Strat: {Strat, "", false},
 		Thc:   {Thc, "", false},
 		Tix:   {Tix, "", false},
@@ -238,8 +239,9 @@ func Get(name string) (currency Currency, err error) {
 func Normalise(name string) string {
 	currency, err := Get(name)
 	if err != nil {
+		name = strings.ToUpper(name)
 		utils.Log().Debugf("unknown currency %s left unchanged", name)
-		return strings.ToUpper(name)
+		return name
 	}
 
 	return currency.Name
