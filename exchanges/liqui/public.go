@@ -51,12 +51,12 @@ func Markets() (_ []crypto.Market, err error) {
 		symbols := strings.Split(pair, "_")
 		market, err := crypto.NewMarket(symbols[0], symbols[1])
 		if err != nil {
-			log.Debugf("skipping market %s/%s: %v", market.Asset, market.PricedIn, err)
+			log.Debugf("skipping market %s/%s: %v", symbols[0], symbols[1], err)
 			continue
 		}
 
 		if d.Hidden == 1 {
-			log.Debugf("skipping market %s/%s: marked as hidden by exchange", market.Asset, market.PricedIn)
+			log.Debugf("skipping market %s/%s: marked as hidden by exchange", symbols[0], symbols[1])
 			continue
 		}
 
