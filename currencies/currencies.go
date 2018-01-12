@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	. "github.com/meeDamian/crypto/currencies/symbols"
-	"github.com/meeDamian/crypto/utils"
 	"github.com/pkg/errors"
 )
 
@@ -233,18 +232,6 @@ func Get(name string) (currency Currency, err error) {
 	}
 
 	return
-}
-
-// returns base name for an alias or unchanged (but uppercase'd) if currency unknown
-func Normalise(name string) string {
-	currency, err := Get(name)
-	if err != nil {
-		name = strings.ToUpper(name)
-		utils.Log().Debugf("normalising skipped: %v", name, err)
-		return name
-	}
-
-	return currency.Name
 }
 
 // returns an alias for a given base name (if found in the `aliases` slice) or unchanged otherwise
