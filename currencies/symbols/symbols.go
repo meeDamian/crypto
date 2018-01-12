@@ -11,6 +11,7 @@ const (
 	Gbp = "GBP"
 	Hkd = "HKD"
 	Idr = "IDR"
+	Inr = "INR"
 	Jpy = "JPY"
 	Krw = "KRW"
 	Myr = "MYR"

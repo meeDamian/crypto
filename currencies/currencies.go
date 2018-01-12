@@ -48,6 +48,7 @@ var (
 		Gbp: {Gbp, "£", true},
 		Hkd: {Hkd, "HK$", true},
 		Idr: {Idr, "Rp", true},
+		Inr: {Inr, "₹", true},
 		Jpy: {Jpy, "J¥", true},
 		Krw: {Krw, "₩", true},
 		Myr: {Myr, "RM", true},
