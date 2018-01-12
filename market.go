@@ -15,7 +15,7 @@ func (m Market) String() string {
 	return fmt.Sprintf("%s/%s", m.Asset, m.PricedIn)
 }
 
-func NewMarketWithError(asset, price string) (m Market, err error) {
+func NewMarket(asset, price string) (m Market, err error) {
 	a, err := currencies.Get(asset)
 	if err != nil {
 		return m, err
@@ -54,5 +54,5 @@ func NewMarketFromSymbol(symbol string) (market Market, err error) {
 		return market, errors.Errorf("symbol %s is invalid or contains unknown currency", symbol)
 	}
 
-	return NewMarketWithError(matches[0][1], matches[0][2])
+	return NewMarket(matches[0][1], matches[0][2])
 }

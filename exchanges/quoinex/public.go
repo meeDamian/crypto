@@ -87,7 +87,7 @@ func Markets() (_ []crypto.Market, err error) {
 	}
 
 	for _, m := range markets {
-		market, err := crypto.NewMarketWithError(m.Asset, m.PricedIn)
+		market, err := crypto.NewMarket(m.Asset, m.PricedIn)
 		if err != nil {
 			log.Debugf("skipping market %s/%s: %v", m.Asset, m.PricedIn, err)
 			continue

@@ -49,7 +49,7 @@ func Markets() (_ []crypto.Market, err error) {
 
 	for pair, d := range ts.Pairs {
 		symbols := strings.Split(pair, "_")
-		market, err := crypto.NewMarketWithError(symbols[0], symbols[1])
+		market, err := crypto.NewMarket(symbols[0], symbols[1])
 		if err != nil {
 			log.Debugf("skipping market %s/%s: %v", market.Asset, market.PricedIn, err)
 			continue
