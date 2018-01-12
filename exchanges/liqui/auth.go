@@ -19,7 +19,6 @@ const apiUrl = "https://api.liqui.io/tapi"
 func signature(query, secret string) string {
 	mac := hmac.New(sha512.New, []byte(secret))
 	mac.Write([]byte(query))
-
 	return hex.EncodeToString(mac.Sum(nil))
 }
 

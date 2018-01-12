@@ -17,7 +17,6 @@ import (
 func signature(secret, query string) string {
 	mac := hmac.New(sha256.New, []byte(secret))
 	mac.Write([]byte(query))
-
 	return hex.EncodeToString(mac.Sum(nil))
 }
 

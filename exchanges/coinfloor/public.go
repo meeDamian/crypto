@@ -7,7 +7,6 @@ import (
 	"github.com/meeDamian/crypto/currencies"
 	. "github.com/meeDamian/crypto/currencies/symbols"
 	"github.com/meeDamian/crypto/orderbook"
-	"github.com/pkg/errors"
 )
 
 const orderBookUrl = "https://webapi.coinfloor.co.uk:8090/bist/%s/%s/order_book/"
@@ -29,16 +28,11 @@ var (
 	}
 )
 
+func morph(name string) string {
+	return currencies.Morph(name, aliases)
+}
+
 func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
-	url := fmt.Sprintf(orderBookUrl,
-		currencies.Morph(m.Asset, aliases),
-		m.PricedIn,
-	)
-
-	ob, err = orderbook.Download(url)
-	if err != nil {
-		err = errors.Wrap(err, "unable to fetch Order Book")
-	}
-
-	return
+	url := fmt.Sprintf(orderBookUrl, morph(m.Asset), m.PricedIn)
+	return orderbook.Download(url)
 }

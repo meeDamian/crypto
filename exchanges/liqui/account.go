@@ -18,7 +18,7 @@ type infoResp struct {
 func Balances(c crypto.Credentials) (balances crypto.Balances, err error) {
 	res, err := privateRequest(c, "getInfo", nil)
 	if err != nil {
-		return balances, err
+		return nil, err
 	}
 
 	defer res.Body.Close()
@@ -26,18 +26,18 @@ func Balances(c crypto.Credentials) (balances crypto.Balances, err error) {
 	var info infoResp
 	err = json.NewDecoder(res.Body).Decode(&info)
 	if err != nil {
-		return balances, errors.Wrap(err, "can't json-decode response")
+		return
 	}
 
 	if info.Success == 0 {
-		return balances, errors.Errorf("error downloading balances: %s", *info.Error)
+		return nil, errors.Errorf("error downloading balances: %s", *info.Error)
 	}
 
 	balances = make(crypto.Balances)
 	for name, b := range info.Return.Funds {
 		err := balances.Add(name, b, nil, nil)
 		if err != nil {
-			log.Debugf("skipping balance of %s: %v", name, err)
+			log.Debugf("skipping balance of %s = %f: %v", name, b, err)
 		}
 	}
 

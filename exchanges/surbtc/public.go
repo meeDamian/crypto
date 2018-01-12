@@ -7,7 +7,6 @@ import (
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
-	"github.com/pkg/errors"
 )
 
 const (
@@ -35,7 +34,7 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 
 	res, err := utils.NetClient().Get(url)
 	if err != nil {
-		return ob, errors.Wrap(err, "unable to GET orderbook")
+		return
 	}
 
 	defer res.Body.Close()
@@ -43,15 +42,10 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 	var r obResponse
 	err = json.NewDecoder(res.Body).Decode(&r)
 	if err != nil {
-		return ob, errors.Wrap(err, "unable to decode response")
+		return
 	}
 
-	ob, err = orderbook.Normalise(r.OrderBook.Asks, r.OrderBook.Bids)
-	if err != nil {
-		err = errors.Wrapf(err, "unable to fetch %s Order Book", Domain)
-	}
-
-	return
+	return orderbook.Normalise(r.OrderBook.Asks, r.OrderBook.Bids)
 }
 
 func Markets() (_ []crypto.Market, err error) {
@@ -73,7 +67,10 @@ func Markets() (_ []crypto.Market, err error) {
 	}
 
 	for _, m := range ms.Markets {
-		marketList = append(marketList, crypto.NewMarket(m.Asset, m.PricedIn))
+		marketList, err = crypto.AppendMarket(marketList, m.Asset, m.PricedIn)
+		if err != nil {
+			log.Debugf("skipping market %s/%s: %v", m.Asset, m.PricedIn, err)
+		}
 	}
 
 	return marketList, nil

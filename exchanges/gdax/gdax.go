@@ -1,8 +1,13 @@
 package gdax
 
-import "github.com/meeDamian/crypto"
+import (
+	"github.com/meeDamian/crypto"
+	"github.com/meeDamian/crypto/utils"
+)
 
 const Domain = "gdax.com"
+
+var log = utils.Log().WithField("exchange", Domain)
 
 // DOCS: https://docs.gdax.com/
 func New() crypto.Exchange {

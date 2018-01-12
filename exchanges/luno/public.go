@@ -8,7 +8,6 @@ import (
 	"github.com/meeDamian/crypto/currencies"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
-	"github.com/pkg/errors"
 )
 
 type tickers struct {
@@ -24,18 +23,13 @@ const (
 
 var marketList []crypto.Market
 
+func morph(name string) string {
+	return currencies.Morph(name, aliases)
+}
+
 func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
-	url := fmt.Sprintf(orderBookUrl,
-		currencies.Morph(m.Asset, aliases),
-		currencies.Morph(m.PricedIn, aliases),
-	)
-
-	ob, err = orderbook.Download(url)
-	if err != nil {
-		err = errors.Wrapf(err, "unable to fetch %s Order Book", Domain)
-	}
-
-	return
+	url := fmt.Sprintf(orderBookUrl, morph(m.Asset), morph(m.PricedIn))
+	return orderbook.Download(url)
 }
 
 func Markets() (_ []crypto.Market, err error) {
@@ -59,7 +53,7 @@ func Markets() (_ []crypto.Market, err error) {
 	for _, m := range ts.Tickers {
 		market, err := crypto.NewMarketFromSymbol(m.Pair)
 		if err != nil {
-			log.Debugln("unable to parse symbol:", err)
+			log.Debugf("skipping symbol %s: %v", m.Pair, err)
 			continue
 		}
 

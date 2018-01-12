@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 
 	"github.com/meeDamian/crypto"
-	"github.com/pkg/errors"
 )
 
 const balancesUrl = "https://api.kraken.com/0/private/Balance"
@@ -16,7 +15,7 @@ type balResp struct {
 func Balances(c crypto.Credentials) (balances crypto.Balances, err error) {
 	res, err := privateRequest(c, balancesUrl, nil)
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	defer res.Body.Close()
@@ -24,20 +23,20 @@ func Balances(c crypto.Credentials) (balances crypto.Balances, err error) {
 	var bal balResp
 	err = json.NewDecoder(res.Body).Decode(&bal)
 	if err != nil {
-		return balances, errors.Wrap(err, "can't json-decode response")
+		return
 	}
 
 	balances = make(crypto.Balances)
 	for currency, available := range bal.Result {
-		currencyName, err := removeKrakenNonsense(currency)
+		currencyName, err := removePrefix(currency)
 		if err != nil {
-			log.Debug(err)
+			log.Debugf("skipping balance of %s: %v", currency, err)
 			continue
 		}
 
 		err = balances.Add(currencyName, available, nil, nil)
 		if err != nil {
-			log.Debugf("skipping balance of %s: %v", currencyName, err)
+			log.Debugf("skipping balance of %s = %s: %v", currencyName, available, err)
 		}
 	}
 

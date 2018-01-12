@@ -30,33 +30,23 @@ var (
 	marketPairings pairings
 )
 
-func (p pairings) getId(market crypto.Market) (int, error) {
-	for id, m := range p {
+func getId(market crypto.Market) (int, error) {
+	for id, m := range marketPairings {
 		if m.Asset == market.Asset && m.PricedIn == market.PricedIn {
 			return id, nil
 		}
 	}
 
-	return 0, errors.Errorf("requested market(%s%s) not found", market.Asset, market.PricedIn)
+	return 0, errors.Errorf("pairing for requested market(%s) not found", market)
 }
 
 func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
-	if len(marketPairings) == 0 {
-		return ob, errors.New("call to bx.OrderBook() requires prior call to bx.Markets()")
-	}
-
-	id, err := marketPairings.getId(m)
+	id, err := getId(m)
 	if err != nil {
-		return ob, errors.Wrapf(err, "unable to get %s market pairing", Domain)
+		return ob, err
 	}
 
-	url := fmt.Sprintf(orderBookUrl, id)
-	ob, err = orderbook.Download(url)
-	if err != nil {
-		err = errors.Wrap(err, "unable to fetch Order Book")
-	}
-
-	return
+	return orderbook.Download(fmt.Sprintf(orderBookUrl, id))
 }
 
 func Markets() (_ []crypto.Market, err error) {
@@ -78,9 +68,12 @@ func Markets() (_ []crypto.Market, err error) {
 	}
 
 	marketPairings = make(map[int]crypto.Market)
-
 	for _, m := range ms {
-		market := crypto.NewMarket(m.Asset, m.PricedIn)
+		market, err := crypto.NewMarketWithError(m.Asset, m.PricedIn)
+		if err != nil {
+			log.Debugf("skipping market %s/%s: %v", m.Asset, m.PricedIn, err)
+			continue
+		}
 
 		marketPairings[m.Id] = market
 		marketList = append(marketList, market)

@@ -38,11 +38,12 @@ var marketList = []crypto.Market{
 	{Xlm, Idr}, {Xlm, Btc},
 }
 
+func morph(name string) string {
+	return strings.ToLower(currencies.Morph(name, aliases))
+}
+
 func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
-	url := fmt.Sprintf(orderBookUrl,
-		strings.ToLower(currencies.Morph(m.Asset, aliases)),
-		strings.ToLower(currencies.Morph(m.PricedIn, aliases)),
-	)
+	url := fmt.Sprintf(orderBookUrl, morph(m.Asset), morph(m.PricedIn))
 
 	res, err := utils.NetClient().Get(url)
 	if err != nil {

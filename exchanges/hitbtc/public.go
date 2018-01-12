@@ -47,7 +47,10 @@ func Markets() (_ []crypto.Market, err error) {
 	}
 
 	for _, m := range ms {
-		marketList = append(marketList, crypto.NewMarket(m.Asset, m.PricedIn))
+		marketList, err = crypto.AppendMarket(marketList, m.Asset, m.PricedIn)
+		if err != nil {
+			log.Debugf("skipping market %s/%s: %v", m.Asset, m.PricedIn, err)
+		}
 	}
 
 	return marketList, nil
@@ -66,7 +69,7 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 	var r obResp
 	err = json.NewDecoder(res.Body).Decode(&r)
 	if err != nil {
-		return ob, err
+		return
 	}
 
 	return orderbook.Normalise(r.Asks, r.Bids)

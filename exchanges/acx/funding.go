@@ -29,7 +29,7 @@ type bla struct {
 	TxHash        *string `json:"transaction_hash"`
 }
 
-func Withdrawals(c crypto.Credentials) (blas []bla, err error) {
+func ThisWillChange_Withdrawals(c crypto.Credentials) (blas []bla, err error) {
 	res, err := privateRequest(c, "GET", withdrawalsUrl, map[string]string{
 		"limit": "100",
 	})
@@ -48,7 +48,7 @@ func Withdrawals(c crypto.Credentials) (blas []bla, err error) {
 	return
 }
 
-func Deposits(c crypto.Credentials) (blas []bla, err error) {
+func ThisWillChange_Deposits(c crypto.Credentials) (blas []bla, err error) {
 	res, err := privateRequest(c, "GET", depositsUrl, map[string]string{
 		"limit": "100",
 	})

@@ -35,7 +35,7 @@ func Markets() (_ []crypto.Market, err error) {
 
 	res, err := utils.NetClient().Get(marketsUrl)
 	if err != nil {
-		return []crypto.Market{}, errors.Wrap(err, "couldn't fetch markets")
+		return []crypto.Market{}, err
 	}
 
 	defer res.Body.Close()
@@ -43,13 +43,13 @@ func Markets() (_ []crypto.Market, err error) {
 	var r marketsResponse
 	err = json.NewDecoder(res.Body).Decode(&r)
 	if err != nil {
-		return []crypto.Market{}, errors.Wrap(err, "unable to json-decode response")
+		return
 	}
 
 	for symbol := range r.Result {
 		market, err := crypto.NewMarketFromSymbol(symbol)
 		if err != nil {
-			log.Debugln("unable to parse symbol:", err)
+			log.Debugf("skipping symbol %s: %v", symbol, err)
 			continue
 		}
 
@@ -59,10 +59,10 @@ func Markets() (_ []crypto.Market, err error) {
 	return marketList, nil
 }
 
-func nonsensePrefix(curr string) (string, error) {
-	c, err := currencies.Get(curr)
+func addPrefix(name string) (string, error) {
+	c, err := currencies.Get(name)
 	if err != nil {
-		return "", errors.Wrap(err, "unable to add kraken prefix")
+		return "", errors.Wrap(err, "unable to add Z/X prefix")
 	}
 
 	prefix := "X"
@@ -70,32 +70,34 @@ func nonsensePrefix(curr string) (string, error) {
 		prefix = "Z"
 	}
 
-	return fmt.Sprintf("%s%s", prefix, curr), nil
+	return fmt.Sprintf("%s%s", prefix, name), nil
 }
 
-func removeKrakenNonsense(val string) (string, error) {
-	ret := val
+func removePrefix(prefixedName string) (string, error) {
+	ret := prefixedName
 	if len(ret) == 4 && (ret[0] == 'Z' || ret[0] == 'X') {
 		ret = ret[1:]
 	}
 
 	c, err := currencies.Get(ret)
 	if err != nil {
-		return "", errors.Wrapf(err, "couldn't extract valid currency from %s", val)
+		return "", errors.Wrapf(err, "can't extract valid currency from %s", prefixedName)
 	}
 
 	return c.Name, nil
 }
 
-func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
-	assetSymbol := currencies.Morph(m.Asset, aliases)
-	priceSymbol := currencies.Morph(m.PricedIn, aliases)
+func morph(name string) string {
+	return currencies.Morph(name, aliases)
+}
 
+func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
+	assetSymbol, priceSymbol := morph(m.Asset), morph(m.PricedIn)
 	url := fmt.Sprintf(orderBookUrl, assetSymbol, priceSymbol)
 
 	res, err := utils.NetClient().Get(url)
 	if err != nil {
-		return ob, errors.Wrap(err, "unable to GET orderbook")
+		return ob, err
 	}
 
 	defer res.Body.Close()
@@ -103,38 +105,33 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 	var r obResponse
 	err = json.NewDecoder(res.Body).Decode(&r)
 	if err != nil {
-		return ob, errors.Wrap(err, "unable to json-decode response")
+		return
 	}
 
-	prefAsset, err := nonsensePrefix(assetSymbol)
+	prefAsset, err := addPrefix(assetSymbol)
 	if err != nil {
-		return ob, errors.Wrap(err, "cannot prefix asset")
+		return ob, errors.Wrap(err, "can't prefix asset")
 	}
 
-	prefPrice, err := nonsensePrefix(priceSymbol)
+	prefPrice, err := addPrefix(priceSymbol)
 	if err != nil {
-		return ob, errors.Wrap(err, "cannot prefix pricedIn")
+		return ob, errors.Wrap(err, "can't prefix price")
+	}
+
+	if len(r.Result) > 1 {
+		log.Debugf("more than one market returned for %s", m)
 	}
 
 	marketKey := fmt.Sprintf("%s%s", prefAsset, prefPrice)
 	for market, orderResp := range r.Result {
-		if len(r.Result) > 1 {
-			log.Debugf("more than one market returned for %s…", m)
-		}
-
 		if market == marketKey || len(r.Result) == 1 {
 			if market != marketKey {
 				log.Debugf("non-standard market symbol returned: %s instead of %s", market, marketKey)
 			}
 
-			ob, err = orderbook.Normalise(orderResp.Asks, orderResp.Bids)
-			if err != nil {
-				err = errors.Wrap(err, "unable to normalise Order Book")
-			}
-
-			return
+			return orderbook.Normalise(orderResp.Asks, orderResp.Bids)
 		}
 	}
 
-	return ob, errors.Errorf("%s market not found.", marketKey)
+	return ob, errors.Errorf("can't find %s in response", marketKey)
 }

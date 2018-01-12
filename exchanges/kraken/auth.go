@@ -19,12 +19,12 @@ import (
 func signature(fullUrl, nonce, data, secret string) (string, error) {
 	parsedUrl, err := url.Parse(fullUrl)
 	if err != nil {
-		return "", errors.Wrapf(err, "unable to extract path from url = %s", fullUrl)
+		return "", errors.Wrapf(err, "can't extract path from url = %s", fullUrl)
 	}
 
 	base64secret, err := base64.StdEncoding.DecodeString(secret)
 	if err != nil {
-		return "", errors.Wrapf(err, "unable to base64-encode the secret")
+		return "", errors.Wrapf(err, "can't encode secret to base64")
 	}
 
 	noncedData := sha256.Sum256([]byte(nonce + data))

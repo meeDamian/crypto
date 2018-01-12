@@ -64,7 +64,7 @@ func Sort(ob OrderBook) (OrderBook, error) {
 }
 
 func tryPrice(order map[string]interface{}) (price interface{}) {
-	price, ok := order["price"]
+	price, ok := order["price"] // TODO: list exchanges that use this
 	if ok {
 		return
 	}
@@ -78,7 +78,7 @@ func tryPrice(order map[string]interface{}) (price interface{}) {
 }
 
 func tryVolume(order map[string]interface{}) (volume interface{}) {
-	volume, ok := order["volume"]
+	volume, ok := order["volume"] // TODO: list exchanges that use this
 	if ok {
 		return
 	}
@@ -110,17 +110,17 @@ func normaliseOrders(raw []interface{}) (orders []PendingOrder) {
 			break
 
 		default:
-			panic(errors.Errorf("unknown order type returned %#v", order))
+			panic(errors.Errorf("unknown order structure %#v", order))
 		}
 
 		price, err := utils.ToFloat(rawPrice)
 		if err != nil {
-			panic(errors.Wrapf(err, "bids[%d].price = (%v) not convertible to float64", i, rawPrice))
+			panic(errors.Wrapf(err, "can't convert bids[%d].price = (%v) to float64", i, rawPrice))
 		}
 
 		vol, err := utils.ToFloat(rawVol)
 		if err != nil {
-			panic(errors.Wrapf(err, "bids[%d].volume = (%v) not convertible to float64", i, rawVol))
+			panic(errors.Wrapf(err, "can't convert bids[%d].volume = (%v) to float64", i, rawVol))
 		}
 
 		orders = append(orders, PendingOrder{price, vol})
@@ -133,7 +133,7 @@ func normaliseOrders(raw []interface{}) (orders []PendingOrder) {
 func Normalise(asks, bids []interface{}) (ob OrderBook, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			err = errors.Errorf("unable to convert order book: %s", r)
+			err = errors.Errorf("can't normalise order book: %s", r)
 		}
 	}()
 

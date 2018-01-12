@@ -7,7 +7,6 @@ import (
 
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/currencies"
-	"github.com/pkg/errors"
 )
 
 const balancesUrl = "https://www.bitstamp.net/api/v2/balance/"
@@ -15,7 +14,7 @@ const balancesUrl = "https://www.bitstamp.net/api/v2/balance/"
 func Balances(c crypto.Credentials) (balances crypto.Balances, err error) {
 	res, err := privateRequest(c, "POST", balancesUrl, nil)
 	if err != nil {
-		return balances, err
+		return nil, err
 	}
 
 	defer res.Body.Close()
@@ -23,7 +22,7 @@ func Balances(c crypto.Credentials) (balances crypto.Balances, err error) {
 	var r map[string]string
 	err = json.NewDecoder(res.Body).Decode(&r)
 	if err != nil {
-		return balances, errors.Wrap(err, "can't json-decode response")
+		return
 	}
 
 	balances = make(crypto.Balances)

@@ -30,18 +30,18 @@ type (
 )
 
 var (
-	marketList []crypto.Market
-	pairings   []market
+	marketList     []crypto.Market
+	marketPairings []market
 )
 
 func getId(market crypto.Market) (string, error) {
-	for _, m := range pairings {
+	for _, m := range marketPairings {
 		if m.Asset == market.Asset && m.PricedIn == market.PricedIn {
 			return m.Id, nil
 		}
 	}
 
-	return "", errors.Errorf("requested market(%s) not found", market)
+	return "", errors.Errorf("pairing for requested market(%s) not found", market)
 }
 
 func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
@@ -65,12 +65,7 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 		return
 	}
 
-	ob, err = orderbook.Normalise(r.Asks, r.Bids)
-	if err != nil {
-		err = errors.Wrapf(err, "unable to fetch %s Order Book", Domain)
-	}
-
-	return
+	return orderbook.Normalise(r.Asks, r.Bids)
 }
 
 func Markets() (_ []crypto.Market, err error) {
@@ -92,14 +87,22 @@ func Markets() (_ []crypto.Market, err error) {
 	}
 
 	for _, m := range markets {
-		pairings = append(pairings, m)
-
-		if m.Disabled {
-			log.Debugf("skipping disabled market %s/%s", m.Asset, m.PricedIn)
+		market, err := crypto.NewMarketWithError(m.Asset, m.PricedIn)
+		if err != nil {
+			log.Debugf("skipping market %s/%s: %v", m.Asset, m.PricedIn, err)
 			continue
 		}
 
-		marketList = append(marketList, crypto.NewMarket(m.Asset, m.PricedIn))
+		// remember pairings for disabled markets, but…
+		marketPairings = append(marketPairings, m)
+
+		if m.Disabled {
+			log.Debugf("skipping market %s/%s: marked as disabled by exchange", m.Asset, m.PricedIn)
+			continue
+		}
+
+		// …don't return disabled markets
+		marketList = append(marketList, market)
 	}
 
 	return marketList, nil

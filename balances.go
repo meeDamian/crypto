@@ -30,13 +30,13 @@ func (b *Balances) Add(currencyName string, available, total, locked interface{}
 	var balance Balance
 	balance.Available, err = utils.ToFloat(available)
 	if err != nil {
-		return errors.Wrap(err, "unable to parse 'available' amount")
+		return errors.Wrap(err, "can't parse 'available' amount")
 	}
 
 	if total != nil {
 		balance.Total, err = utils.ToFloat(total)
 		if err != nil {
-			return errors.Wrap(err, "unable to parse 'total' amount")
+			return errors.Wrap(err, "can't parse 'total' amount")
 		}
 
 		if locked == nil {
@@ -47,7 +47,7 @@ func (b *Balances) Add(currencyName string, available, total, locked interface{}
 	if locked != nil {
 		balance.Locked, err = utils.ToFloat(locked)
 		if err != nil {
-			return errors.Wrap(err, "unable to parse 'locked' amount")
+			return errors.Wrap(err, "can't parse 'locked' amount")
 		}
 
 		if total == nil {

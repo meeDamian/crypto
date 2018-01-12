@@ -24,7 +24,7 @@ type (
 
 const (
 	infoUrl      = "https://api.liqui.io/api/3/info"
-	orderBookUrl = "https://api.liqui.io/api/3/depth/%s_%s"
+	orderBookUrl = "https://api.liqui.io/api/3/depth/%s"
 )
 
 var marketList []crypto.Market
@@ -49,10 +49,14 @@ func Markets() (_ []crypto.Market, err error) {
 
 	for pair, d := range ts.Pairs {
 		symbols := strings.Split(pair, "_")
-		market := crypto.NewMarket(symbols[0], symbols[1])
+		market, err := crypto.NewMarketWithError(symbols[0], symbols[1])
+		if err != nil {
+			log.Debugf("skipping market %s/%s: %v", market.Asset, market.PricedIn, err)
+			continue
+		}
 
 		if d.Hidden == 1 {
-			log.Debugf("Skipping hidden market: %s/%s", market.Asset, market.PricedIn)
+			log.Debugf("skipping market %s/%s: marked as hidden by exchange", market.Asset, market.PricedIn)
 			continue
 		}
 
@@ -67,10 +71,9 @@ func morph(name string) string {
 }
 
 func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
-	asset, price := morph(m.Asset), morph(m.PricedIn)
-	url := fmt.Sprintf(orderBookUrl, asset, price)
+	symbol := fmt.Sprintf("%s_%s", morph(m.Asset), morph(m.PricedIn))
 
-	res, err := utils.NetClient().Get(url)
+	res, err := utils.NetClient().Get(fmt.Sprintf(orderBookUrl, symbol))
 	if err != nil {
 		return ob, err
 	}
@@ -84,10 +87,10 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 	}
 
 	for name, ob := range r {
-		if name == fmt.Sprintf("%s_%s", asset, price) {
+		if name == symbol {
 			return orderbook.Normalise(ob.Asks, ob.Bids)
 		}
 	}
 
-	return ob, errors.New("no matching market found in response…")
+	return ob, errors.Errorf("no matching market(%s) found in response", symbol)
 }

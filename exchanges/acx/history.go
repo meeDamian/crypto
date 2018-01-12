@@ -24,7 +24,7 @@ type trade struct {
 	OrderId  int64     `json:"order_id"`
 }
 
-func MyTrades(c crypto.Credentials) (ts []trade, err error) {
+func ThisWillChange_MyTrades(c crypto.Credentials) (ts []trade, err error) {
 	res, err := privateRequest(c, "GET", myTradesUrl, map[string]string{
 		"market": "btcaud",
 		"limit":  "1000",
@@ -46,7 +46,7 @@ func MyTrades(c crypto.Credentials) (ts []trade, err error) {
 	return
 }
 
-//func MyOrders(c crypto.Credentials) (o []crypto.Order, err error) {
+//func ThisWillChange_MyOrders(c crypto.Credentials) (o []crypto.Order, err error) {
 //	resp, err := privateRequest(c, "GET", "", map[string]string{
 //		"market": "btcaud",
 //	})

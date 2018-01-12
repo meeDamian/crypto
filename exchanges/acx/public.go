@@ -8,7 +8,6 @@ import (
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
-	"github.com/pkg/errors"
 )
 
 const (
@@ -42,19 +41,20 @@ func Markets() (_ []crypto.Market, err error) {
 	}
 
 	for _, m := range ms {
-		marketList = append(marketList, crypto.NewMarket(m.Asset, m.PricedIn))
+		marketList, err = crypto.AppendMarket(marketList, m.Asset, m.PricedIn)
+		if err != nil {
+			log.Debugf("skipping market %s/%s: %v", m.Asset, m.PricedIn, err)
+		}
 	}
 
 	return marketList, nil
 }
 
-func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
-	url := fmt.Sprintf(orderBookUrl, strings.ToLower(m.Asset), strings.ToLower(m.PricedIn))
+func morph(currency string) string {
+	return strings.ToLower(currency)
+}
 
-	ob, err = orderbook.Download(url)
-	if err != nil {
-		err = errors.Wrap(err, "unable to fetch Order Book")
-	}
-
-	return
+func OrderBook(m crypto.Market) (orderbook.OrderBook, error) {
+	url := fmt.Sprintf(orderBookUrl, morph(m.Asset), morph(m.PricedIn))
+	return orderbook.Download(url)
 }

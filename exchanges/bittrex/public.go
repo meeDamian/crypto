@@ -63,17 +63,19 @@ func Markets() (_ []crypto.Market, err error) {
 	}
 
 	if !ms.Success {
-		err = errors.Errorf("unable to fetch %s markets: ", Domain, ms.Message)
-		return
+		return []crypto.Market{}, errors.Errorf("can't fetch markets: %s", ms.Message)
 	}
 
 	for _, m := range ms.Result {
 		if !m.IsActive {
-			log.Debugf("skipping inactive market %s/%s", m.Asset, m.PricedIn)
+			log.Debugf("skipping market %s/%s: marked as not active by exchange", m.Asset, m.PricedIn)
 			continue
 		}
 
-		marketList = append(marketList, crypto.NewMarket(m.Asset, m.PricedIn))
+		marketList, err = crypto.AppendMarket(marketList, m.Asset, m.PricedIn)
+		if err != nil {
+			log.Debugf("skipping market %s/%s: %v", m.Asset, m.PricedIn, err)
+		}
 	}
 
 	return marketList, nil
@@ -88,7 +90,7 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 
 	res, err := utils.NetClient().Get(url)
 	if err != nil {
-		return ob, err
+		return
 	}
 
 	defer res.Body.Close()
@@ -96,13 +98,8 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 	var r obResp
 	err = json.NewDecoder(res.Body).Decode(&r)
 	if err != nil {
-		return ob, err
+		return
 	}
 
-	ob, err = orderbook.Normalise(r.Result.Asks, r.Result.Bids)
-	if err != nil {
-		err = errors.Wrap(err, "unable to fetch Order Book")
-	}
-
-	return
+	return orderbook.Normalise(r.Result.Asks, r.Result.Bids)
 }

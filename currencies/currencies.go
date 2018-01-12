@@ -229,7 +229,7 @@ func All() map[string]Currency {
 func Get(name string) (currency Currency, err error) {
 	currency, ok := list[strings.ToUpper(name)]
 	if !ok {
-		err = errors.Errorf("%s is not a valid currency", name)
+		err = errors.Errorf("unknown currency '%s'", name)
 	}
 
 	return
@@ -240,7 +240,7 @@ func Normalise(name string) string {
 	currency, err := Get(name)
 	if err != nil {
 		name = strings.ToUpper(name)
-		utils.Log().Debugf("unknown currency %s left unchanged", name)
+		utils.Log().Debugf("normalising skipped: %v", name, err)
 		return name
 	}
 
