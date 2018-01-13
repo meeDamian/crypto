@@ -3,6 +3,7 @@ package kraken
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/currencies"
@@ -23,6 +24,7 @@ type (
 
 	marketsResponse struct {
 		Result map[string]interface{} `json:"result"`
+		Error  *[]string              `json:"error"`
 	}
 )
 
@@ -44,6 +46,10 @@ func Markets() (_ []crypto.Market, err error) {
 	err = json.NewDecoder(res.Body).Decode(&r)
 	if err != nil {
 		return
+	}
+
+	if r.Error != nil && len(*r.Error) > 0 {
+		return marketList, errors.New(strings.Join(*r.Error, ", "))
 	}
 
 	for symbol := range r.Result {
