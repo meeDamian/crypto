@@ -17,12 +17,13 @@ const (
 
 type (
 	pairing struct {
-		Id       int    `json:"pairing_id"`
+		Id       string `json:"pairing_id"`
 		Asset    string `json:"secondary_currency"`
 		PricedIn string `json:"primary_currency"`
+		Active   bool   `json:"active"`
 	}
 
-	pairings map[int]crypto.Market
+	pairings map[string]crypto.Market
 )
 
 var (
@@ -30,14 +31,14 @@ var (
 	marketPairings pairings
 )
 
-func getId(market crypto.Market) (int, error) {
+func getId(market crypto.Market) (string, error) {
 	for id, m := range marketPairings {
 		if m.Asset == market.Asset && m.PricedIn == market.PricedIn {
 			return id, nil
 		}
 	}
 
-	return 0, errors.Errorf("pairing for requested market(%s) not found", market)
+	return "", errors.Errorf("pairing for requested market(%s) not found", market)
 }
 
 func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
@@ -67,7 +68,12 @@ func Markets() (_ []crypto.Market, err error) {
 		return
 	}
 
-	marketPairings = make(map[int]crypto.Market)
+	_, ok := ms["success"]
+	if ok {
+		return []crypto.Market{}, errors.Errorf("market DL rate limited")
+	}
+
+	marketPairings = make(pairings)
 	for _, m := range ms {
 		market, err := crypto.NewMarket(m.Asset, m.PricedIn)
 		if err != nil {
@@ -76,6 +82,11 @@ func Markets() (_ []crypto.Market, err error) {
 		}
 
 		marketPairings[m.Id] = market
+		if !m.Active {
+			log.Debugf("skipping market %s/%s: marked as hidden by exchange", m.Asset, m.PricedIn)
+			continue
+		}
+
 		marketList = append(marketList, market)
 	}
 
