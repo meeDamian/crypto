@@ -12,7 +12,7 @@ import (
 
 const (
 	marketsUrl   = "https://acx.io/api/v2/markets.json"
-	orderBookUrl = "https://acx.io/api/v2/depHHth.json?market=%s%s"
+	orderBookUrl = "https://acx.io/api/v2/depth.json?market=%s%s"
 )
 
 type marketRes struct {

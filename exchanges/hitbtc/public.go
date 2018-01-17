@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/meeDamian/crypto"
+	"github.com/meeDamian/crypto/currencies"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
 )
@@ -47,6 +48,11 @@ func Markets() (_ []crypto.Market, err error) {
 	}
 
 	for _, m := range ms {
+		if m.Asset == currencies.Bcc {
+			log.Debugf("skipping BitConnect market %s/%s…", m.Asset, m.PricedIn)
+			continue
+		}
+
 		marketList, err = crypto.AppendMarket(marketList, m.Asset, m.PricedIn)
 		if err != nil {
 			log.Debugf("skipping market %s/%s: %v", m.Asset, m.PricedIn, err)
