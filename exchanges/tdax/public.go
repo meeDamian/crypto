@@ -7,13 +7,16 @@ import (
 
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/currencies"
-	. "github.com/meeDamian/crypto/currencies/symbols"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
 	"github.com/pkg/errors"
 )
 
-const orderBookUrl = "https://api.tdax.com/orders?Symbol=%s_%s"
+const (
+	orderBookUrl  = "https://api.tdax.com/orders?Symbol=%s_%s"
+	currenciesUrl = "https://api.tdax.com/public/getcurrencies"
+	marketsUrl    = "https://api.tdax.com/public/getmarkets"
+)
 
 type (
 	order struct {
@@ -25,31 +28,23 @@ type (
 		Bids []order `json:"Bids"`
 		Asks []order `json:"Asks"`
 	}
+
+	marketResponse []struct {
+		Asset    string `json:"MarketCurrency"`
+		PricedIn string `json:"BaseCurrency"`
+	}
+
+	currencyResponse []struct {
+		Name    string `json:"Currency"`
+		Divider int64  `json:"Divider"`
+	}
 )
 
 var (
-	marketList = []crypto.Market{
-		{Btc, Thb},
-		{Eth, Thb}, {Eth, Btc},
-		{Btg, Thb}, {Btg, Btc}, {Btg, Eth},
-		{Knc, Thb}, {Knc, Btc}, {Knc, Eth},
-		{Ltc, Thb}, {Ltc, Btc}, {Ltc, Eth},
-		{Neo, Thb}, {Neo, Btc}, {Neo, Eth},
-		{Omg, Thb}, {Omg, Btc}, {Omg, Eth},
-		{Xrp, Thb}, {Xrp, Btc}, {Xrp, Eth},
-		{Xzc, Thb}, {Xzc, Btc}, {Xzc, Eth},
-	}
+	marketList []crypto.Market
+	precisions = make(map[string]int)
 
 	aliases = []string{currencies.Rpx}
-
-	precisions = map[string]int{
-		Thb: 2,
-		Btc: 8,
-		Eth: 18,
-		Btg: 8,
-		Ltc: 8,
-		Xrp: 6,
-	}
 )
 
 func normalisedPendingOrder(o order, m crypto.Market) orderbook.PendingOrder {
@@ -67,6 +62,66 @@ func normalisedPendingOrder(o order, m crypto.Market) orderbook.PendingOrder {
 		Price:  o.Price / math.Pow10(pricePrecision),
 		Volume: o.Volume / math.Pow10(volumePrecision),
 	}
+}
+
+func currencyPrecisions() (err error) {
+	res, err := utils.NetClient().Get(currenciesUrl)
+	if err != nil {
+		return
+	}
+
+	defer res.Body.Close()
+
+	var cs currencyResponse
+	err = json.NewDecoder(res.Body).Decode(&cs)
+	if err != nil {
+		return
+	}
+
+	for _, c := range cs {
+		curr, err := currencies.Get(c.Name)
+		if err != nil {
+			log.Debugf("skipping precision of %s: %v", c.Name, err)
+			continue
+		}
+
+		precisions[curr.Name] = int(math.Log10(float64(c.Divider)))
+	}
+
+	return
+}
+
+func Markets() (_ []crypto.Market, err error) {
+	if len(marketList) > 0 {
+		return marketList, nil
+	}
+
+	err = currencyPrecisions()
+	if err != nil {
+		return []crypto.Market{}, errors.Wrapf(err, "can't download required currency precisions")
+	}
+
+	res, err := utils.NetClient().Get(marketsUrl)
+	if err != nil {
+		return []crypto.Market{}, err
+	}
+
+	defer res.Body.Close()
+
+	var ms marketResponse
+	err = json.NewDecoder(res.Body).Decode(&ms)
+	if err != nil {
+		return
+	}
+
+	for _, m := range ms {
+		marketList, err = crypto.AppendMarket(marketList, m.Asset, m.PricedIn)
+		if err != nil {
+			log.Debugf("skipping market %s/%s: %v", m.Asset, m.PricedIn, err)
+		}
+	}
+
+	return marketList, nil
 }
 
 func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {

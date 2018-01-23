@@ -1,8 +1,13 @@
 package tdax
 
-import "github.com/meeDamian/crypto"
+import (
+	"github.com/meeDamian/crypto"
+	"github.com/meeDamian/crypto/utils"
+)
 
 const Domain = "tdax.com"
+
+var log = utils.Log().WithField("exchange", Domain)
 
 // DOCS: https://api-docs.tdax.com/apis/public/orders.html
 func New() crypto.Exchange {
@@ -10,6 +15,6 @@ func New() crypto.Exchange {
 		Name:      "TDAX",
 		Domain:    Domain,
 		OrderBook: OrderBook,
-		Markets:   func() ([]crypto.Market, error) { return marketList, nil },
+		Markets:   Markets,
 	}
 }
