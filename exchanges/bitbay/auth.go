@@ -1,9 +1,7 @@
 package bitbay
 
 import (
-	"crypto/hmac"
 	"crypto/sha512"
-	"encoding/hex"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -15,13 +13,6 @@ import (
 )
 
 const apiUrl = "https://bitbay.net/API/Trading/tradingApi.php"
-
-func signature(query, secret string) string {
-	mac := hmac.New(sha512.New, []byte(secret))
-	mac.Write([]byte(query))
-
-	return hex.EncodeToString(mac.Sum(nil))
-}
 
 func privateRequest(c crypto.Credentials, apiMethod string, params map[string]string) (response *http.Response, err error) {
 	v := url.Values{}
@@ -39,7 +30,7 @@ func privateRequest(c crypto.Credentials, apiMethod string, params map[string]st
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Add("API-Key", c.Key)
-	req.Header.Add("API-Hash", signature(v.Encode(), c.Secret))
+	req.Header.Add("API-Hash", utils.HmacSign(sha512.New, v.Encode(), c.Secret))
 
 	return utils.NetClient().Do(req)
 }

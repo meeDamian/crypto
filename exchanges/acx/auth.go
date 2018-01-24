@@ -1,9 +1,7 @@
 package acx
 
 import (
-	"crypto/hmac"
 	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"net/http"
 	"strings"
@@ -22,10 +20,7 @@ func signature(method, url, query, secret string) string {
 		query,
 	)
 
-	mac := hmac.New(sha256.New, []byte(secret))
-	mac.Write([]byte(toSign))
-
-	return hex.EncodeToString(mac.Sum(nil))
+	return utils.HmacSign(sha256.New, toSign, secret)
 }
 
 func privateRequest(c crypto.Credentials, method, url string, params map[string]string) (response *http.Response, err error) {

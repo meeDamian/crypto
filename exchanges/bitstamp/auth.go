@@ -1,9 +1,7 @@
 package bitstamp
 
 import (
-	"crypto/hmac"
 	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -15,9 +13,8 @@ import (
 )
 
 func signature(c crypto.Credentials, nonce string) string {
-	mac := hmac.New(sha256.New, []byte(c.Secret))
-	mac.Write([]byte(nonce + *c.Id + c.Key))
-	return strings.ToUpper(hex.EncodeToString(mac.Sum(nil)))
+	query := fmt.Sprintf("%s%s%s", nonce, *c.Id, c.Key)
+	return strings.ToUpper(utils.HmacSign(sha256.New, query, c.Secret))
 }
 
 func privateRequest(c crypto.Credentials, method, url2 string, params map[string]string) (response *http.Response, err error) {

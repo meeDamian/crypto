@@ -1,9 +1,7 @@
 package binance
 
 import (
-	"crypto/hmac"
 	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -13,12 +11,6 @@ import (
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/utils"
 )
-
-func signature(secret, query string) string {
-	mac := hmac.New(sha256.New, []byte(secret))
-	mac.Write([]byte(query))
-	return hex.EncodeToString(mac.Sum(nil))
-}
 
 func privateRequest(c crypto.Credentials, method, url2 string, params map[string]string) (response *http.Response, err error) {
 	v := url.Values{}
@@ -30,7 +22,7 @@ func privateRequest(c crypto.Credentials, method, url2 string, params map[string
 		query := url.Values{}
 		query.Add("timestamp", fmt.Sprintf("%d", time.Now().Unix()*1000))
 		encoded := query.Encode()
-		sign := signature(c.Secret, encoded)
+		sign := utils.HmacSign(sha256.New, encoded, c.Secret)
 
 		url2 = fmt.Sprintf("%s?%s&signature=%s", url2, encoded, sign)
 	}
