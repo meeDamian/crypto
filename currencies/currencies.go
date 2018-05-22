@@ -19,7 +19,8 @@ const (
 	Bcg = "BCG" // bgold
 	Das = "DAS" // Dash
 	Dog = "DOG" // dogecoin
-	Drk = "DRK" // Dash…
+	Drk = "DRK" // Dash
+	Iot = "IOT" // IOTA
 	Nem = "NEM" // NEM
 	Rpx = "RPX" // ripple
 	Str = "STR" // Stellar
@@ -33,6 +34,7 @@ var (
 	bitcoin = Currency{Btc, "₿", false}
 	dash    = Currency{Dash, "", false}
 	doge    = Currency{Doge, "Ð", false}
+	iota    = Currency{Iota, "", false}
 	nem     = Currency{Xem, "", false}
 	ripple  = Currency{Xrp, "Ʀ", false}
 	stellar = Currency{Xlm, "", false}
@@ -72,6 +74,8 @@ var (
 		Xdg:  doge,
 		Bcg:  bgold,
 		Btg:  bgold,
+		Iota: iota,
+		Iot:  iota,
 		Xrp:  ripple,
 		Rpx:  ripple,
 		Dash: dash,
@@ -135,7 +139,6 @@ var (
 		Icn:   {Icn, "", false},
 		Infx:  {Infx, "", false},
 		Iop:   {Iop, "", false},
-		Iota:  {Iota, "", false},
 		Knc:   {Knc, "", false},
 		Kore:  {Kore, "", false},
 		Lgd:   {Lgd, "", false},

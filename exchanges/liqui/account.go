@@ -10,7 +10,7 @@ import (
 type infoResp struct {
 	Success int     `json:"success"`
 	Error   *string `json:"error"`
-	Return *struct {
+	Return  *struct {
 		Funds map[string]float64 `json:"funds"`
 	} `json:"return"`
 }

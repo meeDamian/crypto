@@ -64,7 +64,7 @@ func Sort(ob OrderBook) (OrderBook, error) {
 }
 
 func tryPrice(order map[string]interface{}) (price interface{}) {
-	price, ok := order["price"] // TODO: list exchanges that use this
+	price, ok := order["price"] // bitfinex // TODO: list exchanges that use this
 	if ok {
 		return
 	}
@@ -89,6 +89,11 @@ func tryVolume(order map[string]interface{}) (volume interface{}) {
 	}
 
 	volume, ok = order["size"] // HitBTC
+	if ok {
+		return
+	}
+
+	volume, ok = order["amount"] // Bitfinex
 	if ok {
 		return
 	}

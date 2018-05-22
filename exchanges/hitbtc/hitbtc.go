@@ -12,8 +12,8 @@ var log = utils.Log().WithField("exchange", Domain)
 // DOCS: https://api.hitbtc.com/
 func New() crypto.Exchange {
 	return crypto.Exchange{
-		Name:      "HitBTC",
-		Domain:    Domain,
+		Name:   "HitBTC",
+		Domain: Domain,
 
 		// public
 		OrderBook: OrderBook,
@@ -23,4 +23,3 @@ func New() crypto.Exchange {
 		Balances: Balances,
 	}
 }
-
