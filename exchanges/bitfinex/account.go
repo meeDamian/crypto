@@ -9,14 +9,14 @@ import (
 )
 
 type (
-	Balance struct {
+	balance struct {
 		Type,
 		Currency,
 		Amount,
 		Available string
 	}
 
-	AggregatedBalance struct {
+	aggregatedBalance struct {
 		Total, Available float64
 	}
 )
@@ -29,13 +29,13 @@ func Balances(c crypto.Credentials) (balances crypto.Balances, err error) {
 
 	defer res.Body.Close()
 
-	var bals []Balance
+	var bals []balance
 	err = json.NewDecoder(res.Body).Decode(&bals)
 	if err != nil {
 		return balances, errors.Wrap(err, "can't json-decode response")
 	}
 
-	tmpBalances := make(map[string]AggregatedBalance)
+	tmpBalances := make(map[string]aggregatedBalance)
 	for _, b := range bals {
 		total, err := utils.ToFloat(b.Amount)
 		if err != nil {
@@ -49,7 +49,7 @@ func Balances(c crypto.Credentials) (balances crypto.Balances, err error) {
 			continue
 		}
 
-		x := AggregatedBalance{
+		x := aggregatedBalance{
 			Total:     total,
 			Available: available,
 		}

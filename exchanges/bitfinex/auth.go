@@ -1,10 +1,8 @@
 package bitfinex
 
 import (
-	"crypto/hmac"
 	"crypto/sha512"
 	"encoding/base64"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -15,13 +13,6 @@ import (
 )
 
 const apiUrl = "https://api.bitfinex.com/v1/%s"
-
-func signature(c crypto.Credentials, toSign string) string {
-	mac := hmac.New(sha512.New384, []byte(c.Secret))
-	mac.Write([]byte(toSign))
-
-	return hex.EncodeToString(mac.Sum(nil))
-}
 
 func privateRequest(c crypto.Credentials, method, apiMethod string) (response *http.Response, err error) {
 	nonce := fmt.Sprintf("%d", time.Now().Unix())
@@ -47,7 +38,7 @@ func privateRequest(c crypto.Credentials, method, apiMethod string) (response *h
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("X-BFX-APIKEY", c.Key)
 	req.Header.Add("X-BFX-PAYLOAD", encoded)
-	req.Header.Add("X-BFX-SIGNATURE", signature(c, encoded))
+	req.Header.Add("X-BFX-SIGNATURE", utils.HmacSign(sha512.New384, encoded, c.Secret))
 
 	return utils.NetClient().Do(req)
 }
