@@ -34,8 +34,6 @@ func Balances(c crypto.Credentials) (balances crypto.Balances, err error) {
 		return nil, errors.Errorf("error downloading balances: %s", *info.Error)
 	}
 
-	log.Println(info.Return)
-
 	balances = make(crypto.Balances)
 	for name, total := range info.Return.Total {
 		var available *float64
