@@ -37,5 +37,5 @@ func init() {
 	}
 
 	orSymbols := strings.Join(symbols, "|")
-	pairRegExp = *regexp.MustCompile(fmt.Sprintf(`^[ZX]?(%[1]s)\/?[ZX]?(%[1]s)$`, orSymbols))
+	pairRegExp = *regexp.MustCompile(fmt.Sprintf(`(?i)^[ZX]?(%[1]s)\/?[_ZX]?(%[1]s)$`, orSymbols))
 }
