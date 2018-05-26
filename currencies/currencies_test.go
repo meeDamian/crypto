@@ -3,13 +3,12 @@ package currencies
 import (
 	"testing"
 
-	"github.com/meeDamian/arb/lib/currencies"
 	. "github.com/meeDamian/crypto/currencies/symbols"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestMorphBccMatch(t *testing.T) {
-	a := Morph(Bch, []string{currencies.Bcc})
+	a := Morph(Bch, []string{Bcc})
 
 	Convey("Should change BCH to BCC", t, func() {
 		So(a, ShouldEqual, Bcc)
@@ -17,7 +16,7 @@ func TestMorphBccMatch(t *testing.T) {
 }
 
 func TestMorphBccNoMatch(t *testing.T) {
-	a := Morph(Btc, []string{currencies.Bcc})
+	a := Morph(Btc, []string{Bcc})
 
 	Convey("Should change BCH to BCC", t, func() {
 		So(a, ShouldEqual, Btc)
@@ -25,7 +24,7 @@ func TestMorphBccNoMatch(t *testing.T) {
 }
 
 func TestMorphXbtMatch(t *testing.T) {
-	a := Morph(Btc, []string{currencies.Xbt})
+	a := Morph(Btc, []string{Xbt})
 
 	Convey("Should change BCH to BCC", t, func() {
 		So(a, ShouldEqual, Xbt)
@@ -33,7 +32,7 @@ func TestMorphXbtMatch(t *testing.T) {
 }
 
 func TestMorphXbtNoMatch(t *testing.T) {
-	a := Morph(Eth, []string{currencies.Xbt})
+	a := Morph(Eth, []string{Xbt})
 
 	Convey("Should change BCH to BCC", t, func() {
 		So(a, ShouldEqual, Eth)

@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/meeDamian/arb/lib/currencies"
+	"github.com/meeDamian/crypto/currencies"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
