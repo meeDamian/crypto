@@ -16,9 +16,14 @@ var (
 // DOCS: https://bittrex.com/home/api
 func New() crypto.Exchange {
 	return crypto.Exchange{
-		Name:      "bittrex",
-		Domain:    Domain,
+		Name:   "bittrex",
+		Domain: Domain,
+
+		// public
 		OrderBook: OrderBook,
 		Markets:   Markets,
+
+		// private
+		Balances: Balances,
 	}
 }
