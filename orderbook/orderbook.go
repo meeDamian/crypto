@@ -2,6 +2,7 @@ package orderbook
 
 import (
 	"encoding/json"
+	"net/http"
 	"sort"
 
 	"github.com/meeDamian/crypto/utils"
@@ -157,6 +158,26 @@ func Download(url string) (OrderBook, error) {
 	}
 
 	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		statusCode := res.StatusCode
+
+		// NOTE: bitbay exception for a 509 code (Bandwidth Limit Exceeded) that's
+		//       not in Go implementation.
+		if statusCode == 509 {
+			statusCode = http.StatusTooManyRequests
+		}
+
+		return OrderBook{}, errors.New(http.StatusText(statusCode))
+	}
+
+	//// NOTE: uncomment to see raw responses
+	//bodyBytes, err := ioutil.ReadAll(res.Body)
+	//if err != nil {
+	//	return OrderBook{}, err
+	//}
+	//bodyString := string(bodyBytes)
+	//log.Println(bodyString)
 
 	var r ObResponse
 	err = json.NewDecoder(res.Body).Decode(&r)

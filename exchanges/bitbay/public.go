@@ -7,8 +7,7 @@ import (
 	"github.com/meeDamian/crypto/currencies"
 	. "github.com/meeDamian/crypto/currencies/symbols"
 	"github.com/meeDamian/crypto/orderbook"
-	"github.com/pkg/errors"
-)
+	)
 
 const orderBookUrl = "https://bitbay.net/API/Public/%s%s/orderbook.json"
 
@@ -28,10 +27,5 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 		currencies.Morph(m.PricedIn, aliases),
 	)
 
-	ob, err = orderbook.Download(url)
-	if err != nil {
-		err = errors.Wrap(err, "unable to fetch Order Book")
-	}
-
-	return
+	return orderbook.Download(url)
 }

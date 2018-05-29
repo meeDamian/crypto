@@ -3,6 +3,7 @@ package liqui
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/meeDamian/crypto"
@@ -19,12 +20,14 @@ type (
 		} `json:"pairs"`
 	}
 
-	obResp map[string]orderbook.ObResponse
+	obResp map[string]interface{}
 )
 
 const (
 	infoUrl      = "https://api.liqui.io/api/3/info"
 	orderBookUrl = "https://api.liqui.io/api/3/depth/%s"
+
+	errorTooManyRequests = "Requests too often"
 )
 
 var marketList []crypto.Market
@@ -86,9 +89,22 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 		return ob, err
 	}
 
+	if errText, ok := r["error"].(string); ok {
+		if errText == errorTooManyRequests {
+			return ob, errors.New(http.StatusText(http.StatusTooManyRequests))
+		}
+
+		return ob, errors.New(errText)
+	}
+
 	for name, ob := range r {
 		if name == symbol {
-			return orderbook.Normalise(ob.Asks, ob.Bids)
+			obSides := ob.(map[string]interface{})
+
+			return orderbook.Normalise(
+				obSides["asks"].([]interface{}),
+				obSides["bids"].([]interface{}),
+			)
 		}
 	}
 
