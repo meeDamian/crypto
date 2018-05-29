@@ -10,7 +10,7 @@ import (
 type balResp struct {
 	Success int     `json:"success"`
 	Error   *string `json:"error"`
-	Return *struct {
+	Return  *struct {
 		Available map[string]float64 `json:"funds"`
 		Total     map[string]float64 `json:"funds_incl_orders"`
 	} `json:"return"`

@@ -34,4 +34,3 @@ func privateRequest(c crypto.Credentials, apiMethod string, params map[string]st
 
 	return utils.NetClient().Do(req)
 }
-

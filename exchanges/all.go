@@ -37,6 +37,7 @@ var All = []crypto.Exchange{
 	hitbtc.New(),
 	kraken.New(),
 	liqui.New(),
+	//livecoin.New(),
 	luno.New(),
 	nzbcx.New(),
 	quoinex.New(),

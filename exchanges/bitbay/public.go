@@ -7,7 +7,7 @@ import (
 	"github.com/meeDamian/crypto/currencies"
 	. "github.com/meeDamian/crypto/currencies/symbols"
 	"github.com/meeDamian/crypto/orderbook"
-	)
+)
 
 const orderBookUrl = "https://bitbay.net/API/Public/%s%s/orderbook.json"
 
