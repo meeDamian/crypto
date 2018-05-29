@@ -22,7 +22,7 @@ type (
 	}
 
 	Credentials struct {
-		Id *string // because Bitstamp…
+		Id *string // needed for Bitstamp and tdax
 
 		Name, Key, Secret string
 	}

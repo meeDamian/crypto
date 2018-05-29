@@ -3,7 +3,6 @@ package tdax
 import (
 	"encoding/json"
 	"fmt"
-	"math"
 
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/currencies"
@@ -14,7 +13,6 @@ import (
 
 const (
 	orderBookUrl  = "https://api.tdax.com/orders?Symbol=%s_%s"
-	currenciesUrl = "https://api.tdax.com/public/getcurrencies"
 	marketsUrl    = "https://api.tdax.com/public/getmarkets"
 )
 
@@ -33,63 +31,13 @@ type (
 		Asset    string `json:"MarketCurrency"`
 		PricedIn string `json:"BaseCurrency"`
 	}
-
-	currencyResponse []struct {
-		Name    string `json:"Currency"`
-		Divider int64  `json:"Divider"`
-	}
 )
 
 var (
 	marketList []crypto.Market
-	precisions = make(map[string]int)
 
 	aliases = []string{currencies.Rpx}
 )
-
-func normalisedPendingOrder(o order, m crypto.Market) orderbook.PendingOrder {
-	volumePrecision, ok := precisions[m.Asset]
-	if !ok {
-		panic(errors.Errorf("precision of %s unknown", m.Asset))
-	}
-
-	pricePrecision, ok := precisions[m.PricedIn]
-	if !ok {
-		panic(errors.Errorf("precision of %s unknown", m.PricedIn))
-	}
-
-	return orderbook.PendingOrder{
-		Price:  o.Price / math.Pow10(pricePrecision),
-		Volume: o.Volume / math.Pow10(volumePrecision),
-	}
-}
-
-func currencyPrecisions() (err error) {
-	res, err := utils.NetClient().Get(currenciesUrl)
-	if err != nil {
-		return
-	}
-
-	defer res.Body.Close()
-
-	var cs currencyResponse
-	err = json.NewDecoder(res.Body).Decode(&cs)
-	if err != nil {
-		return
-	}
-
-	for _, c := range cs {
-		curr, err := currencies.Get(c.Name)
-		if err != nil {
-			log.Debugf("skipping precision of %s: %v", c.Name, err)
-			continue
-		}
-
-		precisions[curr.Name] = int(math.Log10(float64(c.Divider)))
-	}
-
-	return
-}
 
 func Markets() (_ []crypto.Market, err error) {
 	if len(marketList) > 0 {
@@ -125,12 +73,6 @@ func Markets() (_ []crypto.Market, err error) {
 }
 
 func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			err = errors.Errorf("unable to convert order book: %s", r)
-		}
-	}()
-
 	url := fmt.Sprintf(orderBookUrl,
 		currencies.Morph(m.Asset, aliases),
 		currencies.Morph(m.PricedIn, aliases),
@@ -151,11 +93,21 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 
 	var asks, bids []orderbook.PendingOrder
 	for _, o := range r.Asks {
-		asks = append(asks, normalisedPendingOrder(o, m))
+		po, err := normalisedPendingOrder(o, m)
+		if err != nil {
+			return ob, err
+		}
+
+		asks = append(asks, po)
 	}
 
 	for _, o := range r.Bids {
-		bids = append(bids, normalisedPendingOrder(o, m))
+		po, err := normalisedPendingOrder(o, m)
+		if err != nil {
+			return ob, err
+		}
+
+		bids = append(bids, po)
 	}
 
 	ob, err = orderbook.Sort(orderbook.OrderBook{
