@@ -39,7 +39,7 @@ type (
 		// returns OrderBooks of ALL available markets. Should only be implemented if a "shortcut" endpoint exists
 		//      If only some markets couldn't be downloaded, error should be logged, but not returned.
 		//      Error only if no usable data can be returned
-		AllOrderBooks func() ([]orderbook.OrderBook, error)
+		AllOrderBooks func() (map[Market]orderbook.OrderBook, error)
 	}
 
 	Credentials struct {
