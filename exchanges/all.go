@@ -15,6 +15,7 @@ import (
 	"github.com/meeDamian/crypto/exchanges/hitbtc"
 	"github.com/meeDamian/crypto/exchanges/kraken"
 	"github.com/meeDamian/crypto/exchanges/liqui"
+	"github.com/meeDamian/crypto/exchanges/livecoin"
 	"github.com/meeDamian/crypto/exchanges/luno"
 	"github.com/meeDamian/crypto/exchanges/nzbcx"
 	"github.com/meeDamian/crypto/exchanges/quoinex"
@@ -37,7 +38,7 @@ var All = []crypto.Exchange{
 	hitbtc.New(),
 	kraken.New(),
 	liqui.New(),
-	//livecoin.New(),
+	livecoin.New(),
 	luno.New(),
 	nzbcx.New(),
 	quoinex.New(),
