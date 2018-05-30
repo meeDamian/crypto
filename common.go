@@ -11,20 +11,46 @@ import (
 
 type (
 	Exchange struct {
-		Name, Domain string
+		// each exchange SHOULD specify its human-readable name
+		Name string
 
-		// public
+		// each exchange MUST specify its generic top level domain (`www.`, etc should be omitted)
+		Domain string
+
+		/**
+		 * public
+		**/
+		// returns OrderBook for requested Market or error
 		OrderBook func(Market) (orderbook.OrderBook, error)
-		Markets   func() ([]Market, error)
 
-		// private
+		// returns a list of all Markets on available on a given exchange. Includes disabled Markets.
+		//      Limited to supported currencies only, see currencies/currencies.go and currencies/symbols/symbols.go for more
+		Markets func() ([]Market, error)
+
+		/**
+		 * private
+		**/
+		// returns all exchange Balances (Total, Available, Locked) for account credentials provided
 		Balances func(Credentials) (Balances, error)
+
+		/**
+		 * optional
+		**/
+		// returns OrderBooks of ALL available markets. Should only be implemented if a "shortcut" endpoint exists
+		//      If only some markets couldn't be downloaded, error should be logged, but not returned.
+		//      Error only if no usable data can be returned
+		AllOrderBooks func() ([]orderbook.OrderBook, error)
 	}
 
 	Credentials struct {
-		Id *string // needed for Bitstamp and tdax
+		// human-readable Name of the account
+		Name string
 
-		Name, Key, Secret string
+		// API Key & Secret
+		Key, Secret string
+
+		// Id needed by bitstamp and tdax
+		Id *string
 	}
 )
 
