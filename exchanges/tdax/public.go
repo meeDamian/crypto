@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	orderBookUrl  = "https://api.tdax.com/orders?Symbol=%s_%s"
-	marketsUrl    = "https://api.tdax.com/public/getmarkets"
+	orderBookUrl = "https://api.tdax.com/orders?Symbol=%s_%s"
+	marketsUrl   = "https://api.tdax.com/public/getmarkets"
 )
 
 type (

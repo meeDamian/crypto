@@ -3,7 +3,7 @@ package tdax
 import (
 	"encoding/json"
 	"fmt"
-		"net/http"
+	"net/http"
 
 	"github.com/meeDamian/crypto"
 	"github.com/pkg/errors"

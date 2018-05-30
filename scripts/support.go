@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	header := fmt.Sprintf("| %-15s | %-10s | %-12s | %-17s | %-10s", "Domain", ".Markets()", ".OrderBook()", ".AllOrderBooks()",".Balances()")
+	header := fmt.Sprintf("| %-15s | %-10s | %-12s | %-17s | %-10s", "Domain", ".Markets()", ".OrderBook()", ".AllOrderBooks()", ".Balances()")
 	length := len(header)
 
 	fmt.Println(header)
@@ -16,7 +16,7 @@ func main() {
 
 	var markets, obs, aobs, balances int64
 	for _, e := range exchanges.All {
-		fmt.Printf("| %-15s | %-10t | %-12t | %-17t | %t\n", e.Domain, e.Markets != nil, e.OrderBook != nil, e.AllOrderBooks!=nil, e.Balances != nil)
+		fmt.Printf("| %-15s | %-10t | %-12t | %-17t | %t\n", e.Domain, e.Markets != nil, e.OrderBook != nil, e.AllOrderBooks != nil, e.Balances != nil)
 
 		if e.Markets != nil {
 			markets++

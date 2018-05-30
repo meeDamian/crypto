@@ -1,14 +1,12 @@
 package livecoin
 
 import (
-"encoding/json"
-"fmt"
+	"encoding/json"
+	"fmt"
 
-
-
-"github.com/meeDamian/crypto"
-"github.com/meeDamian/crypto/orderbook"
-"github.com/meeDamian/crypto/utils"
+	"github.com/meeDamian/crypto"
+	"github.com/meeDamian/crypto/orderbook"
+	"github.com/meeDamian/crypto/utils"
 )
 
 const (
@@ -63,6 +61,7 @@ func OrderBook(m crypto.Market) (orderbook.OrderBook, error) {
 	return orderbook.Download(url)
 }
 
+// WARNING: returns 10 top orders per OB side MAX
 func AllOrderBooks() (obs map[crypto.Market]orderbook.OrderBook, err error) {
 	res, err := utils.NetClient().Get(allOrderBooksUrl)
 	if err != nil {
