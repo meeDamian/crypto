@@ -9,8 +9,7 @@ import (
 	"github.com/meeDamian/crypto/orderbook"
 )
 
-type (
-	Exchange struct {
+type (Exchange struct {
 		// each exchange SHOULD specify its human-readable name
 		Name string
 
@@ -20,12 +19,12 @@ type (
 		/**
 		 * public
 		**/
-		// returns OrderBook for requested Market or error
-		OrderBook func(Market) (orderbook.OrderBook, error)
-
 		// returns a list of all Markets on available on a given exchange. Includes disabled Markets.
 		//      Limited to supported currencies only, see currencies/currencies.go and currencies/symbols/symbols.go for more
 		Markets func() ([]Market, error)
+
+		// returns OrderBook for requested Market or error
+		OrderBook func(Market) (orderbook.OrderBook, error)
 
 		/**
 		 * private
@@ -39,6 +38,18 @@ type (
 		// returns OrderBooks of ALL available markets. Should only be implemented if a "shortcut" endpoint exists
 		//      If only some markets couldn't be downloaded, error should be logged, but not returned.
 		//      Error only if no usable data can be returned
+		AllOrderBooks func() (map[Market]orderbook.OrderBook, error)
+	}
+
+	// The same as Exchange, except:
+	//      1) Doesn't require explicit Credentials passed
+	//      2) Inserts methods returning "not implemented" error in place of missing ones
+	ExchangeClient struct {
+		Name          string
+		Domain        string
+		Markets       func() ([]Market, error)
+		OrderBook     func(Market) (orderbook.OrderBook, error)
+		Balances      func() (Balances, error)
 		AllOrderBooks func() (map[Market]orderbook.OrderBook, error)
 	}
 
