@@ -9,7 +9,19 @@ import (
 	"github.com/meeDamian/crypto/orderbook"
 )
 
-type (Exchange struct {
+type (
+	Credentials struct {
+		// human-readable Name of the account
+		Name string
+
+		// API Key & Secret
+		Key, Secret string
+
+		// Id needed by bitstamp and tdax
+		Id *string
+	}
+
+	Exchange struct {
 		// each exchange SHOULD specify its human-readable name
 		Name string
 
@@ -51,17 +63,6 @@ type (Exchange struct {
 		OrderBook     func(Market) (orderbook.OrderBook, error)
 		Balances      func() (Balances, error)
 		AllOrderBooks func() (map[Market]orderbook.OrderBook, error)
-	}
-
-	Credentials struct {
-		// human-readable Name of the account
-		Name string
-
-		// API Key & Secret
-		Key, Secret string
-
-		// Id needed by bitstamp and tdax
-		Id *string
 	}
 )
 
