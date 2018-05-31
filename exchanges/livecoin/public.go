@@ -61,8 +61,9 @@ func OrderBook(m crypto.Market) (orderbook.OrderBook, error) {
 	return orderbook.Download(url)
 }
 
-// WARNING: returns 10 top orders per OB side MAX
 func AllOrderBooks() (obs map[crypto.Market]orderbook.OrderBook, err error) {
+	log.Warningf("WARNING: %s.AllOrderBooks() returns at most %d top orders on each side of the Order Book.", Domain, 10)
+
 	res, err := utils.NetClient().Get(allOrderBooksUrl)
 	if err != nil {
 		return obs, err
@@ -80,13 +81,13 @@ func AllOrderBooks() (obs map[crypto.Market]orderbook.OrderBook, err error) {
 	for pair, rawOb := range r {
 		market, err := crypto.NewMarketFromSymbol(pair)
 		if err != nil {
-			log.Errorf("can't process symbol %s into a market: %v", pair, err)
+			log.Debugf("can't process symbol %s into a market: %v", pair, err)
 			continue
 		}
 
 		obs[market], err = orderbook.Normalise(rawOb.Asks, rawOb.Bids)
 		if err != nil {
-			log.Errorf("can't process %s orderbook: %v", market, err)
+			log.Debugf("can't process %s orderbook: %v", market, err)
 			continue
 		}
 	}
