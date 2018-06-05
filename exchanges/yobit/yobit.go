@@ -10,7 +10,7 @@ const Domain = "yobit.net"
 
 var (
 	log     = utils.Log().WithField("exchange", Domain)
-	aliases = []string{currencies.Bcc}
+	aliases = []string{currencies.Bcc, currencies.Rur}
 )
 
 // DOCS: https://yobit.io/en/api/

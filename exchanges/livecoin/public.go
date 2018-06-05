@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/meeDamian/crypto"
+	"github.com/meeDamian/crypto/currencies"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
 )
@@ -56,8 +57,12 @@ func Markets() (_ []crypto.Market, err error) {
 	return marketList, nil
 }
 
+func morph(name string) string {
+	return currencies.Morph(name, aliases)
+}
+
 func OrderBook(m crypto.Market) (orderbook.OrderBook, error) {
-	url := fmt.Sprintf(orderBookUrl, m.Asset, m.PricedIn)
+	url := fmt.Sprintf(orderBookUrl, morph(m.Asset), morph(m.PricedIn))
 	return orderbook.Download(url)
 }
 
