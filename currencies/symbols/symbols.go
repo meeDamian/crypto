@@ -84,6 +84,7 @@ const (
 	Infx  = "INFX"  // Influxcoin               https://coinmarketcap.com/currencies/influxcoin/
 	Iop   = "IOP"   // Internet of People       https://coinmarketcap.com/currencies/internet-of-people/
 	Iota  = "IOTA"  // Iota
+	Ipbc  = "IPBC"
 	Knc   = "KNC"   // Kyber Network
 	Kore  = "KORE"  // Kore
 	Lgd   = "LGD"   // Legends Room             https://coinmarketcap.com/currencies/legends-room/

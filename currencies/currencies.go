@@ -139,6 +139,7 @@ var (
 		Icn:   {Icn, "", false},
 		Infx:  {Infx, "", false},
 		Iop:   {Iop, "", false},
+		Ipbc:  {Ipbc, "", false},
 		Knc:   {Knc, "", false},
 		Kore:  {Kore, "", false},
 		Lgd:   {Lgd, "", false},
