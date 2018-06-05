@@ -15,6 +15,8 @@ type Currency struct {
 
 // NOTE: alternative names (aliases) here ONLY. Everything else to `symbols/`
 const (
+	Rur = "RUR" // old rubble
+
 	Bcc = "BCC" // bcash
 	Bcg = "BCG" // bgold
 	Das = "DAS" // Dash
@@ -29,6 +31,8 @@ const (
 )
 
 var (
+	rubble = Currency{Rub, "₽", true}
+
 	bcash   = Currency{Bch, "💩", false}
 	bgold   = Currency{Btg, "", false}
 	bitcoin = Currency{Btc, "₿", false}
@@ -40,6 +44,10 @@ var (
 	stellar = Currency{Xlm, "", false}
 
 	list = map[string]Currency{
+		// fiat  (w/more than 1 name)
+		Rub: rubble,
+		Rur: rubble,
+
 		// fiat
 		Aud: {Aud, "AU$", true},
 		Cad: {Cad, "C$", true},

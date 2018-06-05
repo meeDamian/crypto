@@ -20,6 +20,7 @@ const (
 	Pen = "PEN"
 	Php = "PHP"
 	Pln = "PLN"
+	Rub = "RUB"
 	Sgd = "SGD"
 	Thb = "THB"
 	Usd = "USD"
