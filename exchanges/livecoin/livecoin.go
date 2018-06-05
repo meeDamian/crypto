@@ -21,6 +21,6 @@ func New() crypto.Exchange {
 		AllOrderBooks: AllOrderBooks,
 
 		// private
-		//Balances: Balances,
+		Balances: Balances,
 	}
 }
