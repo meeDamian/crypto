@@ -9,7 +9,7 @@ const Domain = "livecoin.net"
 
 var log = utils.Log().WithField("exchange", Domain)
 
-// DOCS: https://liqui.io/api
+// DOCS: https://www.livecoin.net/api/common#authorization
 func New() crypto.Exchange {
 	return crypto.Exchange{
 		Name:   "Livecoin",
