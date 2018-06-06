@@ -44,12 +44,12 @@ func main() {
 	var symbols, currs string
 	for symbol, cnt := range missing {
 		if cnt < minimumOccurrences {
-			log.Printf("skipping %s, because it exists in less than %d markets only\n", symbol, minimumOccurrences)
+			log.Printf("skipping %s, because it exists in less than %d markets only", symbol, minimumOccurrences)
 			continue
 		}
 
 		if _, err := strconv.Atoi(symbol[:1]); err == nil {
-			log.Printf("skipping %s, because it starts with a number\n", symbol)
+			log.Printf("skipping %s, because it starts with a number", symbol)
 			continue
 		}
 
