@@ -10,7 +10,7 @@ import (
 	"github.com/meeDamian/crypto/utils"
 )
 
-var minimumOccurrences = 7
+var minimumOccurrences = 10
 
 func main() {
 	utils.EnableDebugLogs(true)
@@ -54,12 +54,12 @@ func main() {
 		}
 
 		bla := fmt.Sprintf("%s%s", strings.ToUpper(symbol[:1]), strings.ToLower(symbol[1:]))
-		symbols += fmt.Sprintf("%s = \"%s\" // NAME(%d)         URL\n", bla, symbol, cnt)
-		currs += fmt.Sprintf("%s:{%s, \"\", false},\n", bla, bla)
+		symbols += fmt.Sprintf("%s = \"%s\" // NAME(%d)                   URL\n", bla, symbol, cnt)
+		currs += fmt.Sprintf("%s: {%s, \"\", false},\n", bla, bla)
 	}
 
-	log.Printf("symbols.go:\n%s\n", symbols)
-	log.Printf("currencies.go:\n%s\n", currs)
+	fmt.Printf("symbols.go:\n%s\n", symbols)
+	fmt.Printf("currencies.go:\n%s\n", currs)
 
 	log.Println("NOTE: Adding above and running this script again might result in more missing currencies being detected!")
 }
