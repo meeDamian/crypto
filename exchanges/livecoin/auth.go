@@ -2,7 +2,7 @@ package livecoin
 
 import (
 	"crypto/sha256"
-		"net/http"
+	"net/http"
 	"net/url"
 	"strings"
 

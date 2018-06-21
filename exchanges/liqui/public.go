@@ -58,7 +58,7 @@ func Markets() (_ []crypto.Market, err error) {
 		}
 
 		if d.Hidden == 1 {
-			log.Debugf("skipping market %s: marked as hidden by exchange",market)
+			log.Debugf("skipping market %s: marked as hidden by exchange", market)
 			continue
 		}
 
