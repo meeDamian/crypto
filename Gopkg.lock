@@ -18,41 +18,6 @@
   version = "v4.2.1"
 
 [[projects]]
-  branch = "master"
-  digest = "1:393d5a44a72c96180b7e729078ce1cca8e42cff3a20e2b28f6fa9b8ea529746d"
-  name = "github.com/meeDamian/crypto"
-  packages = [
-    ".",
-    "currencies",
-    "currencies/symbols",
-    "exchanges",
-    "exchanges/acx",
-    "exchanges/binance",
-    "exchanges/bitbay",
-    "exchanges/bitcoincoid",
-    "exchanges/bitfinex",
-    "exchanges/bitstamp",
-    "exchanges/bittrex",
-    "exchanges/bx",
-    "exchanges/coinfloor",
-    "exchanges/gdax",
-    "exchanges/hitbtc",
-    "exchanges/kraken",
-    "exchanges/liqui",
-    "exchanges/livecoin",
-    "exchanges/luno",
-    "exchanges/nzbcx",
-    "exchanges/quoinex",
-    "exchanges/surbtc",
-    "exchanges/tdax",
-    "exchanges/yobit",
-    "orderbook",
-    "utils",
-  ]
-  pruneopts = "UT"
-  revision = "7b08dd2f783348b83d972060d1aea3a49091f301"
-
-[[projects]]
   digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
   name = "github.com/pkg/errors"
   packages = ["."]
@@ -115,32 +80,6 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/meeDamian/crypto",
-    "github.com/meeDamian/crypto/currencies",
-    "github.com/meeDamian/crypto/currencies/symbols",
-    "github.com/meeDamian/crypto/exchanges",
-    "github.com/meeDamian/crypto/exchanges/acx",
-    "github.com/meeDamian/crypto/exchanges/binance",
-    "github.com/meeDamian/crypto/exchanges/bitbay",
-    "github.com/meeDamian/crypto/exchanges/bitcoincoid",
-    "github.com/meeDamian/crypto/exchanges/bitfinex",
-    "github.com/meeDamian/crypto/exchanges/bitstamp",
-    "github.com/meeDamian/crypto/exchanges/bittrex",
-    "github.com/meeDamian/crypto/exchanges/bx",
-    "github.com/meeDamian/crypto/exchanges/coinfloor",
-    "github.com/meeDamian/crypto/exchanges/gdax",
-    "github.com/meeDamian/crypto/exchanges/hitbtc",
-    "github.com/meeDamian/crypto/exchanges/kraken",
-    "github.com/meeDamian/crypto/exchanges/liqui",
-    "github.com/meeDamian/crypto/exchanges/livecoin",
-    "github.com/meeDamian/crypto/exchanges/luno",
-    "github.com/meeDamian/crypto/exchanges/nzbcx",
-    "github.com/meeDamian/crypto/exchanges/quoinex",
-    "github.com/meeDamian/crypto/exchanges/surbtc",
-    "github.com/meeDamian/crypto/exchanges/tdax",
-    "github.com/meeDamian/crypto/exchanges/yobit",
-    "github.com/meeDamian/crypto/orderbook",
-    "github.com/meeDamian/crypto/utils",
     "github.com/pkg/errors",
     "github.com/sirupsen/logrus",
     "github.com/smartystreets/goconvey/convey",

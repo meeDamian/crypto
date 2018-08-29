@@ -23,6 +23,7 @@
 #   non-go = false
 #   go-tests = true
 #   unused-packages = true
+ignored = ["github.com/meeDamian/crypto*"]
 
 [[constraint]]
   name = "github.com/pkg/errors"
