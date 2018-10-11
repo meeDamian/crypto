@@ -11,8 +11,9 @@ const balancesUrl = "https://api.livecoin.net/payment/balances"
 
 type (
 	errorResp struct {
-		Success bool    `json:"success"`
-		Error   *string `json:"error"`
+		Success  bool    `json:"success"`
+		Error    *string `json:"error"`
+		ErrorMsg *string `json:"errorMessage"`
 	}
 
 	balancesResp []struct {
@@ -37,7 +38,16 @@ func Balances(c crypto.Credentials) (balances crypto.Balances, err error) {
 			return
 		}
 
-		return balances, errors.New(*r.Error)
+		var errMsg string
+		if r.Error != nil {
+			errMsg = *r.Error
+		} else if r.ErrorMsg != nil {
+			errMsg = *r.ErrorMsg
+		} else {
+			errMsg = "error unknown"
+		}
+
+		return balances, errors.New(errMsg)
 	}
 
 	var bals balancesResp
