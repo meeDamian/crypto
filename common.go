@@ -56,7 +56,7 @@ type (
 	// The same as Exchange, except:
 	//      1) Doesn't require explicit Credentials passed
 	//      2) Inserts methods returning "not implemented" error in place of missing ones
-	//      3) (SOON) all methods respect rate-limiting; scoped to client instance(!)
+	//      3) (TODO) all methods respect rate-limiting; scoped to client instance(!)
 	ExchangeClient struct {
 		Name          string
 		Domain        string
