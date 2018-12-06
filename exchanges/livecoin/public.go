@@ -3,8 +3,8 @@ package livecoin
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/meeDamian/crypto/markets"
 
-	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/currencies"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
@@ -17,35 +17,35 @@ const (
 )
 
 type (
-	markets []struct {
+	markets2 []struct {
 		Symbol string `json:"symbol"`
 	}
 
 	allObResp map[string]orderbook.ObResponse
 )
 
-var marketList []crypto.Market
+var marketList []markets.Market
 
-func Markets() (_ []crypto.Market, err error) {
+func Markets() (_ []markets.Market, err error) {
 	if len(marketList) > 0 {
 		return marketList, nil
 	}
 
 	res, err := utils.NetClient().Get(infoUrl)
 	if err != nil {
-		return []crypto.Market{}, err
+		return []markets.Market{}, err
 	}
 
 	defer res.Body.Close()
 
-	var ms markets
+	var ms markets2
 	err = json.NewDecoder(res.Body).Decode(&ms)
 	if err != nil {
 		return
 	}
 
 	for _, m := range ms {
-		market, err := crypto.NewMarketFromSymbol(m.Symbol)
+		market, err := markets.NewFromSymbol(m.Symbol)
 		if err != nil {
 			log.Debugf("skipping symbol %s: %v", m.Symbol, err)
 			continue
@@ -61,12 +61,12 @@ func morph(name string) string {
 	return currencies.Morph(name, aliases)
 }
 
-func OrderBook(m crypto.Market) (orderbook.OrderBook, error) {
+func OrderBook(m markets.Market) (orderbook.OrderBook, error) {
 	url := fmt.Sprintf(orderBookUrl, morph(m.Asset), morph(m.PricedIn))
 	return orderbook.Download(url)
 }
 
-func AllOrderBooks() (obs map[crypto.Market]orderbook.OrderBook, err error) {
+func AllOrderBooks() (obs map[markets.Market]orderbook.OrderBook, err error) {
 	log.Warningf("WARNING: %s.AllOrderBooks() returns at most %d top orders on each side of the Order Book.", Domain, 10)
 
 	res, err := utils.NetClient().Get(allOrderBooksUrl)
@@ -82,9 +82,9 @@ func AllOrderBooks() (obs map[crypto.Market]orderbook.OrderBook, err error) {
 		return
 	}
 
-	obs = make(map[crypto.Market]orderbook.OrderBook)
+	obs = make(map[markets.Market]orderbook.OrderBook)
 	for pair, rawOb := range r {
-		market, err := crypto.NewMarketFromSymbol(pair)
+		market, err := markets.NewFromSymbol(pair)
 		if err != nil {
 			log.Debugf("can't process symbol %s into a market: %v", pair, err)
 			continue

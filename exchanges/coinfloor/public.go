@@ -2,8 +2,8 @@ package coinfloor
 
 import (
 	"fmt"
+	"github.com/meeDamian/crypto/markets"
 
-	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/currencies"
 	. "github.com/meeDamian/crypto/currencies/symbols"
 	"github.com/meeDamian/crypto/orderbook"
@@ -12,7 +12,7 @@ import (
 const orderBookUrl = "https://webapi.coinfloor.co.uk:8090/bist/%s/%s/order_book/"
 
 var (
-	marketList = []crypto.Market{
+	marketList = []markets.Market{
 		{Btc, Gbp},
 		{Btc, Eur},
 		{Btc, Pln},
@@ -32,7 +32,7 @@ func morph(name string) string {
 	return currencies.Morph(name, aliases)
 }
 
-func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
+func OrderBook(m markets.Market) (ob orderbook.OrderBook, err error) {
 	url := fmt.Sprintf(orderBookUrl, morph(m.Asset), m.PricedIn)
 	return orderbook.Download(url)
 }

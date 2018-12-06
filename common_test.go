@@ -1,6 +1,7 @@
 package crypto
 
 import (
+	"github.com/meeDamian/crypto/markets"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -8,7 +9,7 @@ import (
 
 func TestParseSymbolKraken(t *testing.T) {
 	Convey("should be able to process Kraken symbols", t, func() {
-		market, err := NewMarketFromSymbol("XXBTZEUR")
+		market, err := markets.NewFromSymbol("XXBTZEUR")
 
 		So(err, ShouldBeNil)
 		So(market.Asset, ShouldEqual, "BTC")
@@ -18,7 +19,7 @@ func TestParseSymbolKraken(t *testing.T) {
 
 func TestParseSymbolNormal(t *testing.T) {
 	Convey("should be able to process normal symbols", t, func() {
-		market, err := NewMarketFromSymbol("BTCUSD")
+		market, err := markets.NewFromSymbol("BTCUSD")
 
 		So(err, ShouldBeNil)
 		So(market.Asset, ShouldEqual, "BTC")
@@ -28,7 +29,7 @@ func TestParseSymbolNormal(t *testing.T) {
 
 func TestParseSymbolSlash(t *testing.T) {
 	Convey("should be able to process symbols with a slash", t, func() {
-		market, err := NewMarketFromSymbol("ETH/BTC")
+		market, err := markets.NewFromSymbol("ETH/BTC")
 
 		So(err, ShouldBeNil)
 		So(market.Asset, ShouldEqual, "ETH")
@@ -38,7 +39,7 @@ func TestParseSymbolSlash(t *testing.T) {
 
 func TestParseSymbolAliases(t *testing.T) {
 	Convey("should be able to process symbols using aliases", t, func() {
-		market, err := NewMarketFromSymbol("DRK/XBT")
+		market, err := markets.NewFromSymbol("DRK/XBT")
 
 		So(err, ShouldBeNil)
 		So(market.Asset, ShouldEqual, "DASH")
@@ -48,7 +49,7 @@ func TestParseSymbolAliases(t *testing.T) {
 
 func TestParseSymbolUnknownCurrency(t *testing.T) {
 	Convey("should be able to process symbols using aliases", t, func() {
-		_, err := NewMarketFromSymbol("XXXBTC")
+		_, err := markets.NewFromSymbol("XXXBTC")
 
 		So(err, ShouldNotBeNil)
 	})

@@ -3,9 +3,9 @@ package bitstamp
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/meeDamian/crypto/markets"
 	"strings"
 
-	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
 )
@@ -19,25 +19,25 @@ type market struct {
 	Symbol string `json:"name"`
 }
 
-var marketList []crypto.Market
+var marketList []markets.Market
 
 func morph(name string) string {
 	return strings.ToLower(name)
 }
 
-func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
+func OrderBook(m markets.Market) (ob orderbook.OrderBook, err error) {
 	url := fmt.Sprintf(orderBookUrl, morph(m.Asset), morph(m.PricedIn))
 	return orderbook.Download(url)
 }
 
-func Markets() (_ []crypto.Market, err error) {
+func Markets() (_ []markets.Market, err error) {
 	if len(marketList) > 0 {
 		return marketList, nil
 	}
 
 	res, err := utils.NetClient().Get(marketsUrl)
 	if err != nil {
-		return []crypto.Market{}, err
+		return []markets.Market{}, err
 	}
 
 	defer res.Body.Close()
@@ -49,7 +49,7 @@ func Markets() (_ []crypto.Market, err error) {
 	}
 
 	for _, m := range ms {
-		market, err := crypto.NewMarketFromSymbol(m.Symbol)
+		market, err := markets.NewFromSymbol(m.Symbol)
 		if err != nil {
 			log.Debugf("skipping symbol %s: %v", m.Symbol, err)
 			continue

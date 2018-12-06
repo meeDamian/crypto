@@ -1,6 +1,7 @@
 package crypto
 
 import (
+	"github.com/meeDamian/crypto/markets"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/pkg/errors"
 )
@@ -10,33 +11,33 @@ const (
 	credentialsMissing   = "credentials for %s.%s() not provided"
 )
 
-func handleNilMarkets(e Exchange) func() ([]Market, error) {
+func handleNilMarkets(e Exchange) func() ([]markets.Market, error) {
 	if e.Markets != nil {
 		return e.Markets
 	}
 
-	return func() ([]Market, error) {
-		return []Market{}, errors.Errorf(methodNotImplemented, e.Domain, "Markets")
+	return func() ([]markets.Market, error) {
+		return []markets.Market{}, errors.Errorf(methodNotImplemented, e.Domain, "Markets")
 	}
 }
 
-func handleNilOrderBook(e Exchange) func(Market) (orderbook.OrderBook, error) {
+func handleNilOrderBook(e Exchange) func(markets.Market) (orderbook.OrderBook, error) {
 	if e.OrderBook != nil {
 		return e.OrderBook
 	}
 
-	return func(market Market) (orderbook.OrderBook, error) {
+	return func(market markets.Market) (orderbook.OrderBook, error) {
 		return orderbook.OrderBook{}, errors.Errorf(methodNotImplemented, e.Domain, "OrderBook")
 	}
 }
 
-func handleNilAllOrderBooks(e Exchange) func() (map[Market]orderbook.OrderBook, error) {
+func handleNilAllOrderBooks(e Exchange) func() (map[markets.Market]orderbook.OrderBook, error) {
 	if e.AllOrderBooks != nil {
 		return e.AllOrderBooks
 	}
 
-	return func() (map[Market]orderbook.OrderBook, error) {
-		return map[Market]orderbook.OrderBook{}, errors.Errorf(methodNotImplemented, e.Domain, "AllOrderBooks")
+	return func() (map[markets.Market]orderbook.OrderBook, error) {
+		return map[markets.Market]orderbook.OrderBook{}, errors.Errorf(methodNotImplemented, e.Domain, "AllOrderBooks")
 	}
 }
 

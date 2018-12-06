@@ -1,11 +1,7 @@
 package crypto
 
 import (
-	"fmt"
-	"regexp"
-	"strings"
-
-	"github.com/meeDamian/crypto/currencies"
+	"github.com/meeDamian/crypto/markets"
 	"github.com/meeDamian/crypto/orderbook"
 )
 
@@ -33,10 +29,10 @@ type (
 		**/
 		// returns a list of all Markets on available on a given exchange. Includes disabled Markets.
 		//      Limited to supported currencies only, see currencies/currencies.go and currencies/symbols/symbols.go for more
-		Markets func() ([]Market, error)
+		Markets func() ([]markets.Market, error)
 
 		// returns OrderBook for requested Market or error
-		OrderBook func(Market) (orderbook.OrderBook, error)
+		OrderBook func(markets.Market) (orderbook.OrderBook, error)
 
 		/**
 		 * private
@@ -50,31 +46,19 @@ type (
 		// returns OrderBooks of ALL available markets. Should only be implemented if a "shortcut" endpoint exists
 		//      If only some markets couldn't be downloaded, error should be logged, but not returned.
 		//      Error only if no usable data can be returned
-		AllOrderBooks func() (map[Market]orderbook.OrderBook, error)
+		AllOrderBooks func() (map[markets.Market]orderbook.OrderBook, error)
 	}
 
 	// The same as Exchange, except:
-	//      1) Doesn't require explicit Credentials passed
+	//      1) Doesn't require explicit Credentials passed each time
 	//      2) Inserts methods returning "not implemented" error in place of missing ones
 	//      3) (TODO) all methods respect rate-limiting; scoped to client instance(!)
 	ExchangeClient struct {
 		Name          string
 		Domain        string
-		Markets       func() ([]Market, error)
-		OrderBook     func(Market) (orderbook.OrderBook, error)
+		Markets       func() ([]markets.Market, error)
+		OrderBook     func(markets.Market) (orderbook.OrderBook, error)
 		Balances      func() (Balances, error)
-		AllOrderBooks func() (map[Market]orderbook.OrderBook, error)
+		AllOrderBooks func() (map[markets.Market]orderbook.OrderBook, error)
 	}
 )
-
-var pairRegExp regexp.Regexp
-
-func init() {
-	var symbols []string
-	for symbol := range currencies.All() {
-		symbols = append(symbols, symbol)
-	}
-
-	orSymbols := strings.Join(symbols, "|")
-	pairRegExp = *regexp.MustCompile(fmt.Sprintf(`(?i)^[ZX]?(%[1]s)\/?[_ZX]?(%[1]s)$`, orSymbols))
-}

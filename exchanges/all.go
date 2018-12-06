@@ -46,3 +46,11 @@ var All = []crypto.Exchange{
 	tdax.New(),
 	yobit.New(),
 }
+
+func AllDomains() (names []string) {
+	for _, e := range All {
+		names = append(names, e.Domain)
+	}
+
+	return
+}

@@ -3,8 +3,8 @@ package quoinex
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/meeDamian/crypto/markets"
 
-	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
 	"github.com/pkg/errors"
@@ -30,11 +30,11 @@ type (
 )
 
 var (
-	marketList     []crypto.Market
+	marketList     []markets.Market
 	marketPairings []market
 )
 
-func getId(market crypto.Market) (string, error) {
+func getId(market markets.Market) (string, error) {
 	for _, m := range marketPairings {
 		if m.Asset == market.Asset && m.PricedIn == market.PricedIn {
 			return m.Id, nil
@@ -44,7 +44,7 @@ func getId(market crypto.Market) (string, error) {
 	return "", errors.Errorf("pairing for requested market(%s) not found", market)
 }
 
-func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
+func OrderBook(m markets.Market) (ob orderbook.OrderBook, err error) {
 	id, err := getId(m)
 	if err != nil {
 		return
@@ -68,26 +68,26 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 	return orderbook.Normalise(r.Asks, r.Bids)
 }
 
-func Markets() (_ []crypto.Market, err error) {
+func Markets() (_ []markets.Market, err error) {
 	if len(marketList) > 0 {
 		return marketList, nil
 	}
 
 	res, err := utils.NetClient().Get(marketsUrl)
 	if err != nil {
-		return []crypto.Market{}, err
+		return []markets.Market{}, err
 	}
 
 	defer res.Body.Close()
 
-	var markets []market
-	err = json.NewDecoder(res.Body).Decode(&markets)
+	var markets2 []market
+	err = json.NewDecoder(res.Body).Decode(&markets2)
 	if err != nil {
 		return
 	}
 
-	for _, m := range markets {
-		market, err := crypto.NewMarket(m.Asset, m.PricedIn)
+	for _, m := range markets2 {
+		market, err := markets.New(m.Asset, m.PricedIn)
 		if err != nil {
 			log.Debugf("skipping market %s/%s: %v", m.Asset, m.PricedIn, err)
 			continue

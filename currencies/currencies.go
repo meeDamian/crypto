@@ -17,17 +17,19 @@ type Currency struct {
 const (
 	Rur = "RUR" // old rubble
 
-	Bcc = "BCC" // bcash
-	Bcg = "BCG" // bgold
-	Das = "DAS" // Dash
-	Dog = "DOG" // dogecoin
-	Drk = "DRK" // Dash
-	Iot = "IOT" // IOTA
-	Nem = "NEM" // NEM
-	Rpx = "RPX" // ripple
-	Str = "STR" // Stellar
-	Xbt = "XBT" // bitcoin
-	Xdg = "XDG" // dogecoin
+	Bcc    = "BCC"    // bcash
+	Bab    = "BAB"    // bcash
+	Bchabc = "BCHABC" // bcash
+	Bcg    = "BCG"    // bgold
+	Das    = "DAS"    // Dash
+	Dog    = "DOG"    // dogecoin
+	Drk    = "DRK"    // Dash
+	Iot    = "IOT"    // IOTA
+	Nem    = "NEM"    // NEM
+	Rpx    = "RPX"    // ripple
+	Str    = "STR"    // Stellar
+	Xbt    = "XBT"    // bitcoin
+	Xdg    = "XDG"    // dogecoin
 )
 
 var (
@@ -72,11 +74,15 @@ var (
 		Usd: {Usd, "$", true},
 		Zar: {Zar, "R", true},
 
+		// bcash
+		Bch:    bcash,
+		Bcc:    bcash,
+		Bab:    bcash,
+		Bchabc: bcash,
+
 		// crypto (w/more than 1 symbol)
 		Btc:  bitcoin,
 		Xbt:  bitcoin,
-		Bch:  bcash,
-		Bcc:  bcash,
 		Doge: doge,
 		Dog:  doge,
 		Xdg:  doge,

@@ -3,6 +3,7 @@ package bitcoincoid
 import (
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/currencies"
+	"github.com/meeDamian/crypto/markets"
 	"github.com/meeDamian/crypto/utils"
 )
 
@@ -26,7 +27,7 @@ func New() crypto.Exchange {
 
 		// public
 		OrderBook: OrderBook,
-		Markets:   func() ([]crypto.Market, error) { return marketList, nil },
+		Markets:   func() ([]markets.Market, error) { return marketList, nil },
 
 		// private
 		Balances: Balances,

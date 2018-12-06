@@ -1,6 +1,7 @@
 package main
 
 import (
+	markets2 "github.com/meeDamian/crypto/markets"
 	"net/http"
 	"sync"
 	"time"
@@ -53,7 +54,7 @@ func main() {
 		var success, rateLimited, errored int64
 
 		for _, m := range markets {
-			go func(exchange crypto.Exchange, m crypto.Market) {
+			go func(exchange crypto.Exchange, m markets2.Market) {
 				defer func() {
 					if r := recover(); r != nil {
 						log.Errorf("skipping %s due to: %v", m, r)

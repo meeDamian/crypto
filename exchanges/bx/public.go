@@ -3,8 +3,8 @@ package bx
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/meeDamian/crypto/markets"
 
-	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
 	"github.com/pkg/errors"
@@ -23,15 +23,15 @@ type (
 		Active   bool   `json:"active"`
 	}
 
-	pairings map[string]crypto.Market
+	pairings map[string]markets.Market
 )
 
 var (
-	marketList     []crypto.Market
+	marketList     []markets.Market
 	marketPairings pairings
 )
 
-func getId(market crypto.Market) (string, error) {
+func getId(market markets.Market) (string, error) {
 	for id, m := range marketPairings {
 		if m.Asset == market.Asset && m.PricedIn == market.PricedIn {
 			return id, nil
@@ -41,7 +41,7 @@ func getId(market crypto.Market) (string, error) {
 	return "", errors.Errorf("pairing for requested market(%s) not found", market)
 }
 
-func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
+func OrderBook(m markets.Market) (ob orderbook.OrderBook, err error) {
 	id, err := getId(m)
 	if err != nil {
 		return ob, err
@@ -50,14 +50,14 @@ func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
 	return orderbook.Download(fmt.Sprintf(orderBookUrl, id))
 }
 
-func Markets() (_ []crypto.Market, err error) {
+func Markets() (_ []markets.Market, err error) {
 	if len(marketList) > 0 {
 		return marketList, nil
 	}
 
 	res, err := utils.NetClient().Get(marketsUrl)
 	if err != nil {
-		return []crypto.Market{}, err
+		return []markets.Market{}, err
 	}
 
 	defer res.Body.Close()
@@ -70,12 +70,12 @@ func Markets() (_ []crypto.Market, err error) {
 
 	_, ok := ms["success"]
 	if ok {
-		return []crypto.Market{}, errors.Errorf("market DL rate limited")
+		return []markets.Market{}, errors.Errorf("market DL rate limited")
 	}
 
 	marketPairings = make(pairings)
 	for _, m := range ms {
-		market, err := crypto.NewMarket(m.Asset, m.PricedIn)
+		market, err := markets.New(m.Asset, m.PricedIn)
 		if err != nil {
 			log.Debugf("skipping market %s/%s: %v", m.Asset, m.PricedIn, err)
 			continue

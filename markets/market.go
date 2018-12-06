@@ -1,7 +1,8 @@
-package crypto
+package markets
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/meeDamian/crypto/currencies"
@@ -10,6 +11,18 @@ import (
 
 type Market struct {
 	Asset, PricedIn string
+}
+
+var pairRegExp regexp.Regexp
+
+func init() {
+	var symbols []string
+	for symbol := range currencies.All() {
+		symbols = append(symbols, symbol)
+	}
+
+	orSymbols := strings.Join(symbols, "|")
+	pairRegExp = *regexp.MustCompile(fmt.Sprintf(`(?i)^[ZX]?(%[1]s)\/?[_ZX]?(%[1]s)$`, orSymbols))
 }
 
 func (m Market) String() string {
@@ -29,20 +42,20 @@ func SetCurrencyNotSupportedTrigger(userFn func(string, ...error)) {
 func splitSymbol(symbol string, fn func(string, ...error)) {
 	codes := strings.Split(symbol, "_")
 	if len(codes) > 1 {
-		NewMarket(codes[0], codes[1])
+		New(codes[0], codes[1])
 		return
 	}
 
 	codes = strings.Split(symbol, "/")
 	if len(codes) > 1 {
-		NewMarket(codes[0], codes[1])
+		New(codes[0], codes[1])
 		return
 	}
 
 	fn("", errors.Errorf("Unable to split %s into currencies", symbol))
 }
 
-func NewMarket(asset, price string) (m Market, error error) {
+func New(asset, price string) (m Market, error error) {
 	a, err := currencies.Get(asset)
 	if err != nil {
 		currencyNotSupportedCustomTrigger(asset)
@@ -63,8 +76,8 @@ func NewMarket(asset, price string) (m Market, error error) {
 }
 
 // appends market only if both currencies are known
-func AppendMarket(markets []Market, rawAsset, rawPrice string) ([]Market, error) {
-	market, err := NewMarket(rawAsset, rawPrice)
+func Append(markets []Market, rawAsset, rawPrice string) ([]Market, error) {
+	market, err := New(rawAsset, rawPrice)
 	if err != nil {
 		return markets, err
 	}
@@ -73,12 +86,12 @@ func AppendMarket(markets []Market, rawAsset, rawPrice string) ([]Market, error)
 }
 
 // extracts a valid market from a given symbol, or returns an error
-func NewMarketFromSymbol(symbol string) (market Market, err error) {
+func NewFromSymbol(symbol string) (market Market, err error) {
 	matches := pairRegExp.FindAllStringSubmatch(symbol, -1)
 	if len(matches) == 0 {
 		splitSymbol(symbol, currencyNotSupportedCustomTrigger)
 		return market, errors.Errorf("symbol %s is invalid or contains unknown currency", symbol)
 	}
 
-	return NewMarket(matches[0][1], matches[0][2])
+	return New(matches[0][1], matches[0][2])
 }

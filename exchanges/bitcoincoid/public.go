@@ -3,9 +3,9 @@ package bitcoincoid
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/meeDamian/crypto/markets"
 	"strings"
 
-	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/currencies"
 	. "github.com/meeDamian/crypto/currencies/symbols"
 	"github.com/meeDamian/crypto/orderbook"
@@ -19,7 +19,7 @@ type obResponse struct {
 	Asks []interface{} `json:"sell"`
 }
 
-var marketList = []crypto.Market{
+var marketList = []markets.Market{
 	{Bts, Btc},
 	{Dash, Btc},
 	{Doge, Btc},
@@ -42,7 +42,7 @@ func morph(name string) string {
 	return strings.ToLower(currencies.Morph(name, aliases))
 }
 
-func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
+func OrderBook(m markets.Market) (ob orderbook.OrderBook, err error) {
 	url := fmt.Sprintf(orderBookUrl, morph(m.Asset), morph(m.PricedIn))
 
 	res, err := utils.NetClient().Get(url)

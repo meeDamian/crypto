@@ -2,9 +2,9 @@ package tdax
 
 import (
 	"encoding/json"
+	"github.com/meeDamian/crypto/markets"
 	"math"
 
-	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/currencies"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
@@ -51,7 +51,7 @@ func currencyPrecisions() (err error) {
 	return
 }
 
-func normalisedPendingOrder(o order, m crypto.Market) (po orderbook.PendingOrder, err error) {
+func normalisedPendingOrder(o order, m markets.Market) (po orderbook.PendingOrder, err error) {
 	volume, err := normalize(m.Asset, o.Volume)
 	if err != nil {
 		return po, err

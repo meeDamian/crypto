@@ -3,10 +3,10 @@ package liqui
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/meeDamian/crypto/markets"
 	"net/http"
 	"strings"
 
-	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/currencies"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
@@ -30,16 +30,16 @@ const (
 	errorTooManyRequests = "Requests too often"
 )
 
-var marketList []crypto.Market
+var marketList []markets.Market
 
-func Markets() (_ []crypto.Market, err error) {
+func Markets() (_ []markets.Market, err error) {
 	if len(marketList) > 0 {
 		return marketList, nil
 	}
 
 	res, err := utils.NetClient().Get(infoUrl)
 	if err != nil {
-		return []crypto.Market{}, err
+		return []markets.Market{}, err
 	}
 
 	defer res.Body.Close()
@@ -51,7 +51,7 @@ func Markets() (_ []crypto.Market, err error) {
 	}
 
 	for pair, d := range ts.Pairs {
-		market, err := crypto.NewMarketFromSymbol(pair)
+		market, err := markets.NewFromSymbol(pair)
 		if err != nil {
 			log.Debugf("skipping market %s: %v", pair, err)
 			continue
@@ -72,7 +72,7 @@ func morph(name string) string {
 	return strings.ToLower(currencies.Morph(name, aliases))
 }
 
-func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
+func OrderBook(m markets.Market) (ob orderbook.OrderBook, err error) {
 	symbol := fmt.Sprintf("%s_%s", morph(m.Asset), morph(m.PricedIn))
 
 	res, err := utils.NetClient().Get(fmt.Sprintf(orderBookUrl, symbol))

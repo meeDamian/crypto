@@ -3,6 +3,7 @@ package coinfloor
 import (
 	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/currencies"
+	"github.com/meeDamian/crypto/markets"
 )
 
 const Domain = "coinfloor.co.uk"
@@ -15,6 +16,6 @@ func New() crypto.Exchange {
 		Name:      "CoinFloor",
 		Domain:    Domain,
 		OrderBook: OrderBook,
-		Markets:   func() ([]crypto.Market, error) { return marketList, nil },
+		Markets:   func() ([]markets.Market, error) { return marketList, nil },
 	}
 }

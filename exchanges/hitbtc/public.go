@@ -3,8 +3,8 @@ package hitbtc
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/meeDamian/crypto/markets"
 
-	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/currencies"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
@@ -27,16 +27,16 @@ type (
 	}
 )
 
-var marketList []crypto.Market
+var marketList []markets.Market
 
-func Markets() (_ []crypto.Market, err error) {
+func Markets() (_ []markets.Market, err error) {
 	if len(marketList) > 0 {
 		return marketList, nil
 	}
 
 	res, err := utils.NetClient().Get(marketsUrl)
 	if err != nil {
-		return []crypto.Market{}, err
+		return []markets.Market{}, err
 	}
 
 	defer res.Body.Close()
@@ -53,7 +53,7 @@ func Markets() (_ []crypto.Market, err error) {
 			continue
 		}
 
-		marketList, err = crypto.AppendMarket(marketList, m.Asset, m.PricedIn)
+		marketList, err = markets.Append(marketList, m.Asset, m.PricedIn)
 		if err != nil {
 			log.Debugf("skipping market %s/%s: %v", m.Asset, m.PricedIn, err)
 		}
@@ -62,7 +62,7 @@ func Markets() (_ []crypto.Market, err error) {
 	return marketList, nil
 }
 
-func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
+func OrderBook(m markets.Market) (ob orderbook.OrderBook, err error) {
 	url := fmt.Sprintf(orderBookUrl, m.Asset, m.PricedIn)
 
 	res, err := utils.NetClient().Get(url)

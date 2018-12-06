@@ -1,6 +1,9 @@
 package nzbcx
 
-import "github.com/meeDamian/crypto"
+import (
+	"github.com/meeDamian/crypto"
+	"github.com/meeDamian/crypto/markets"
+)
 
 const Domain = "nzbcx.com"
 
@@ -10,6 +13,6 @@ func New() crypto.Exchange {
 		Name:      "NZBCX",
 		Domain:    Domain,
 		OrderBook: OrderBook,
-		Markets:   func() ([]crypto.Market, error) { return marketList, nil },
+		Markets:   func() ([]markets.Market, error) { return marketList, nil },
 	}
 }

@@ -3,9 +3,9 @@ package yobit
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/meeDamian/crypto/markets"
 	"strings"
 
-	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/currencies"
 	"github.com/meeDamian/crypto/orderbook"
 	"github.com/meeDamian/crypto/utils"
@@ -25,16 +25,16 @@ type (
 	obRes map[string]orderbook.ObResponse
 )
 
-var marketList []crypto.Market
+var marketList []markets.Market
 
-func Markets() (_ []crypto.Market, err error) {
+func Markets() (_ []markets.Market, err error) {
 	if len(marketList) > 0 {
 		return marketList, nil
 	}
 
 	res, err := utils.NetClient().Get(marketsUrl)
 	if err != nil {
-		return []crypto.Market{}, err
+		return []markets.Market{}, err
 	}
 
 	defer res.Body.Close()
@@ -46,7 +46,7 @@ func Markets() (_ []crypto.Market, err error) {
 	}
 
 	for symbol := range ms.Pairs {
-		market, err := crypto.NewMarketFromSymbol(symbol)
+		market, err := markets.NewFromSymbol(symbol)
 		if err != nil {
 			log.Debugf("skipping symbol %s: %v", symbol, err)
 			continue
@@ -62,7 +62,7 @@ func morph(name string) string {
 	return currencies.Morph(name, aliases)
 }
 
-func OrderBook(m crypto.Market) (ob orderbook.OrderBook, err error) {
+func OrderBook(m markets.Market) (ob orderbook.OrderBook, err error) {
 	symbol := strings.ToLower(fmt.Sprintf("%s_%s", morph(m.Asset), morph(m.PricedIn)))
 
 	url := fmt.Sprintf(orderBookUrl, symbol)

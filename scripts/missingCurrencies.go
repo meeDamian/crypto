@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/meeDamian/crypto/markets"
 	"strconv"
 	"strings"
 
-	"github.com/meeDamian/crypto"
 	"github.com/meeDamian/crypto/exchanges"
 	"github.com/meeDamian/crypto/utils"
 )
@@ -18,7 +18,7 @@ func main() {
 	missing := make(map[string]int)
 	var missingCount int
 
-	crypto.SetCurrencyNotSupportedTrigger(func(currency string, err ...error) {
+	markets.SetCurrencyNotSupportedTrigger(func(currency string, err ...error) {
 		if err != nil {
 			utils.Log().Error(err)
 			return
